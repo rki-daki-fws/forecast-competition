@@ -31,6 +31,11 @@ jobs:
       - name: Run evaluation
         run: python evaluate.py
       
+      - name: add label to PR
+        uses: andymckay/labeler@master
+        with:
+          add-labels: "automerge"
+          
       # merge PR, if steps have not thrown errors yet
       - id: automerge
         name: automerge
