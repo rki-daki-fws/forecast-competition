@@ -1,0 +1,20 @@
+# This is a basic workflow to help you get started with Actions
+
+name: Evaluate submission
+
+# Controls when the workflow will run
+on:
+  pull_request:
+    branches:
+      - main
+    types:
+      - closed
+
+# only after PR was merged
+jobs:
+  if_merged:
+    if: github.event.pull_request.merged == true
+    runs-on: ubuntu-latest
+    steps:
+    - run: |
+        echo The PR was merged
