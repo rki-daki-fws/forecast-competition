@@ -12,7 +12,7 @@ def check_format(gt, pred):
     inputs: gt and pred are numpy ndarrays
     return: bool, whether or not format requirements are met
     """
-    if not gt.ndim() == df.ndim():
+    if not gt.ndim() == pred.ndim():
         return False
         
     # TODO expand on other checks once ground truth data is chosen
