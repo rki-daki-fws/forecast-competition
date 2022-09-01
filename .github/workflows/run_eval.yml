@@ -1,20 +1,31 @@
-# This is a basic workflow to help you get started with Actions
-
 name: Evaluate submission
 
-# Controls when the workflow will run
+# run on merged pull request or manual start
 on:
   pull_request:
     branches:
-      - main
+      - submit
     types:
       - closed
+  workflow_dispatch:
 
 # only after PR was merged
 jobs:
+  # TODO add better job name
   if_merged:
     if: github.event.pull_request.merged == true
     runs-on: ubuntu-latest
     steps:
-    - run: |
-        echo The PR was merged
+      - uses: actions/checkout@v3
+      - uses: actions/setup-python@v4
+        with:
+          python-version: '3.9'
+          cache: 'pip' # caching pip dependencies
+      - run: pip install -r requirements.txt
+      
+      # evaluate new submissions, update leaderboard
+      - name: Evaluate new submissions
+        run: python evaluate.py
+        
+      # TODO: pull request to main?
+      # -> automerge it
