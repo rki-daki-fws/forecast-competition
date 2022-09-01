@@ -12,10 +12,10 @@ def check_format(gt, pred):
     inputs: gt and pred are numpy ndarrays
     return: bool, whether or not format requirements are met
     """
-    print(f"type of gt: {type(gt)}")
-    print(f"type of pred: {type(pred)}")
+    #print(f"type of gt: {type(gt)}")
+    #print(f"type of pred: {type(pred)}")
     
-    if not gt.ndim() == pred.ndim():
+    if gt.ndim != pred.ndim:
         return False
         
     # TODO expand on other checks once ground truth data is chosen
