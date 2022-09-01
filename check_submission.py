@@ -65,13 +65,16 @@ if __name__ == "__main__":
         
     if not len(files_added):
         sys.exit("Exiting automatic pipeline, no new results were submitted")
+    else:
+        print(f"{len(files_added)} CSV files have been submitted")
      
      
     # check that naming convention was adhered to
     for f in files_added:
         if file_pattern.match(f.filename) is None:
             sys.exit("Exiting automatic pipeline, submitted files did not adhere to naming convenction")
-    
+    else:
+        print("Submission files adhere to naming convention")
     #if pr is not None:
     #    pr.add_to_labels('other-files-updated')
     
