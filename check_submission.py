@@ -12,6 +12,9 @@ def check_format(gt, pred):
     inputs: gt and pred are numpy ndarrays
     return: bool, whether or not format requirements are met
     """
+    print(f"type of gt: {type(gt)}")
+    print(f"type of pred: {type(pred)}")
+    
     if not gt.ndim() == pred.ndim():
         return False
         
@@ -85,6 +88,7 @@ if __name__ == "__main__":
     
     # probably because they are still in fork, and we only checked out branhc of base repo
     for f in files_added:
+        print(f.filename)
         submission = pd.read_csv(f.filename, sep=",", decimal=".", header=0).to_numpy()
         # check format requirements here
         if not check_format(gt, submission):
