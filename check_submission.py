@@ -45,18 +45,18 @@ if __name__ == "__main__":
     files_changed = []
     file_pattern = re.compile(r"^submissions/([a-zA-Z0-9]+)-([a-zA-Z0-9]+)\.csv")
 
-    if os.environ.get('GITHUB_EVENT_NAME') == 'pull_request_target' or local:
-        # Fetch the  PR number from the event json
-        pr_num = event['pull_request']['number']
-        print(f"PR number: {pr_num}")
+    #if os.environ.get('GITHUB_EVENT_NAME') == 'pull_request_target' or local:
+    # Fetch the  PR number from the event json
+    pr_num = event['pull_request']['number']
+    print(f"PR number: {pr_num}")
 
-        # Use the Github API to fetch the Pullrequest Object. Refer to details here: https://pygithub.readthedocs.io/en/latest/github_objects/PullRequest.html 
-        # pr is the Pullrequest object
-        pr = repo.get_pull(pr_num)
+    # Use the Github API to fetch the Pullrequest Object. Refer to details here: https://pygithub.readthedocs.io/en/latest/github_objects/PullRequest.html 
+    # pr is the Pullrequest object
+    pr = repo.get_pull(pr_num)
 
-        # fetch all files changed in this PR and add it to the files_changed list.
-        files_added +=[f for f in pr.get_files() if f.status=="added"]
-        files_changed +=[f for f in pr.get_files() if f.status!="added"]
+    # fetch all files changed in this PR and add it to the files_changed list.
+    files_added +=[f for f in pr.get_files() if f.status=="added"]
+    files_changed +=[f for f in pr.get_files() if f.status!="added"]
 
     if len(files_changed):
         # TODO add comment to PR?    
