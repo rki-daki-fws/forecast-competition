@@ -82,7 +82,7 @@ if __name__ == "__main__":
     
     # probably because they are still in fork, and we only checked out branhc of base repo
     for f in files_added:
-        submission = pd.read_csv(f, sep=",", decimal=".", header=0).to_numpy()
+        submission = pd.read_csv(f.filename, sep=",", decimal=".", header=0).to_numpy()
         # check format requirements here
         if not check_format(gt, submission):
             sys.exit("Exiting CI pipeline, at least one submission file is not of required format")
