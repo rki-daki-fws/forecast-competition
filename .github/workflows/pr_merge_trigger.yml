@@ -1,0 +1,19 @@
+name: PR merge success
+
+# run on merged pull request or manual start
+on:
+  pull_request:
+    branches:
+      - submit
+    types:
+      - closed
+
+# only after PR was merged
+jobs:
+  # TODO add better job name
+  if_merged:
+    if: github.event.pull_request.merged == true
+    runs-on: ubuntu-latest
+    steps:
+      - name: Evaluate new submissions
+        run: echo "Submission PR successfully merged"
