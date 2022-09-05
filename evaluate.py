@@ -4,6 +4,7 @@ import os
 import sys
 from datetime import date
 from github import Github
+import dataframe_image as dfi
 
 
 if __name__ == "__main__":
@@ -51,11 +52,15 @@ if __name__ == "__main__":
         new_lb.sort_values("score", ascending=False, inplace=True)  # sort by score    
         print(new_lb)
         new_lb.to_csv("leaderboard.csv", index=False)  # update leaderboard file in repo
+        dfi.export(new_lb.iloc[:10, :], "leaderboard_snapshot.png", table_conversion="matplotlib")
+        
         
         # read leaderboard into str
         with open("leaderboard.csv", "r") as f:
             contents_new = f.read()
-        
+            
+        with open("leaderboard_snapshot.png", "rb") as fb:
+            lb_snap = fb.read()  # bytes object
         
         # TODO commit leaderboard changes
         # check that only new results files were added
@@ -71,9 +76,11 @@ if __name__ == "__main__":
 
         repo = g.get_repo(repo_name)
         
-        # update leaderboard file using github API
+        # update leaderboard file and snapshot using github API
         contents_old = repo.get_contents("leaderboard.csv", ref="submit")
         repo.update_file(contents_old.path, "Update leaderboard with new submissions", contents_new, contents_old.sha, branch="submit")
+        snap_old = repo.get_contents("leaderboard_snapshot.png", ref="submit")
+        repo.update_file(snap_old.path, "Update leaderboard snapshot", lb_snap, snap_old.sha, branch="submit")
         
         # TODO start pull request to main
         
