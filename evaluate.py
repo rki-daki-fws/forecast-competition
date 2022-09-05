@@ -11,12 +11,10 @@ if __name__ == "__main__":
     
     # open leaderboard
     lb = pd.read_csv("leaderboard.csv", header=0)
-    print(lb)
     
     submissions_dir = "./submissions"
     # get all submission filenames
     submission_files = [f for f in os.listdir(submissions_dir) if os.path.isfile(os.path.join(submissions_dir, f))]
-    print(submission_files)
     
     to_evaluate = []
     # check which submissions were not evaluated yet
@@ -50,7 +48,7 @@ if __name__ == "__main__":
         new_lb = pd.DataFrame(lb_entries, columns=lb_columns)
         
         new_lb.sort_values("score", ascending=False, inplace=True)  # sort by score    
-        print(new_lb)
+        
         new_lb.to_csv("leaderboard.csv", index=False)  # update leaderboard file in repo
         dfi.export(new_lb.iloc[:10, :], "leaderboard_snapshot.png", table_conversion="matplotlib")
         
@@ -62,11 +60,8 @@ if __name__ == "__main__":
         with open("leaderboard_snapshot.png", "rb") as fb:
             lb_snap = fb.read()  # bytes object
         
-        # TODO commit leaderboard changes
-        # check that only new results files were added
-        print("Added token")
+        # commit leaderboard changes
         token  = os.environ.get('GH_TOKEN')
-        print(f"Token length: {len(token)}")
 
         g = Github(token)
         repo_name = os.environ.get('GITHUB_REPOSITORY')
@@ -82,16 +77,15 @@ if __name__ == "__main__":
         snap_old = repo.get_contents("leaderboard_snapshot.png", ref="submit")
         repo.update_file(snap_old.path, "Update leaderboard snapshot", lb_snap, snap_old.sha, branch="submit")
         
-        # TODO start pull request to main
-        
-        # try:
-            # base = repo.get_branch("main")
-            # head = repo.get_branch("submit")
+        # merge changes to main branch
+        try:
+            base = repo.get_branch("main")
+            head = repo.get_branch("submit")
 
-            # merge_to_master = repo.merge("main",
-                                # head.commit.sha, "Merge new submissions to master")
+            merge_to_master = repo.merge("main",
+                                head.commit.sha, "Merge new submissions to master")
 
-        # except Exception as ex:
-            # sys.exit(ex)
+        except Exception as ex:
+            sys.exit(ex)
     else:
         print("No new submissions to evaluate!")
