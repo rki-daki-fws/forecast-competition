@@ -2,6 +2,8 @@
 
 ## Leaderboard
 
+![Top ten leaderboard positions](https://github.com/mlbach/example-competition/blob/main/leaderboard_snapshot.png)
+
 ## How to
 
 Fork the project, add your predictions as CSV to submissions directory.
