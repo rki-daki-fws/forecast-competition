@@ -25,6 +25,8 @@ jobs:
       # evaluate new submissions, update leaderboard
       - name: Evaluate new submissions
         run: python evaluate.py
+        env:
+          GH_TOKEN: ${{secrets.GITHUB_TOKEN}}
         
       # TODO: pull request to main?
       # -> automerge it
