@@ -1,7 +1,9 @@
 import pandas as pd
 import numpy as np
 import os
+import sys
 from datetime import date
+from github import Github
 
 
 if __name__ == "__main__":
@@ -48,11 +50,41 @@ if __name__ == "__main__":
         
         new_lb.sort_values("score", ascending=False, inplace=True)  # sort by score    
         print(new_lb)
-        #new_lb.to_csv("leaderboard.csv", index=False)  # update leaderboard file in repo
+        new_lb.to_csv("leaderboard.csv", index=False)  # update leaderboard file in repo
+        
+        # read leaderboard into str
+        with open("leaderboard.csv", "r") as f:
+            contents_new = f.read
         
         
         # TODO commit leaderboard changes
+        # check that only new results files were added
+        print("Added token")
+        token  = os.environ.get('GH_TOKEN')
+        print(f"Token length: {len(token)}")
+
+        g = Github(token)
+        repo_name = os.environ.get('GITHUB_REPOSITORY')
+
+        if repo_name is None:
+            repo_name = 'mlbach/example-competition'
+
+        repo = g.get_repo(repo_name)
         
-        # TODO start pull request to master
+        # update leaderboard file using github API
+        contents_old = repo.get_contents("leaderboard.csv", ref="submit")
+        repo.update_file(contents_old.path, "Update leaderboard with new submissions", contents_new, contents_old.sha, branch="submit")
+        
+        # TODO start pull request to main
+        
+        # try:
+            # base = repo.get_branch("main")
+            # head = repo.get_branch("submit")
+
+            # merge_to_master = repo.merge("main",
+                                # head.commit.sha, "Merge new submissions to master")
+
+        # except Exception as ex:
+            # sys.exit(ex)
     else:
         print("No new submissions to evaluate!")
