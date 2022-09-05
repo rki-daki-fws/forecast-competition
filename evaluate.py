@@ -54,7 +54,7 @@ if __name__ == "__main__":
         
         # read leaderboard into str
         with open("leaderboard.csv", "r") as f:
-            contents_new = f.read
+            contents_new = f.read()
         
         
         # TODO commit leaderboard changes
