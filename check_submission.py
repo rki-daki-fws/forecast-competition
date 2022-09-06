@@ -12,7 +12,10 @@ def check_format(gt, pred):
     inputs: gt and pred are numpy ndarrays
     return: bool, whether or not format requirements are met
     """
-    if not gt.ndim() == df.ndim():
+    #print(f"type of gt: {type(gt)}")
+    #print(f"type of pred: {type(pred)}")
+    
+    if gt.ndim != pred.ndim:
         return False
         
     # TODO expand on other checks once ground truth data is chosen
@@ -45,18 +48,18 @@ if __name__ == "__main__":
     files_changed = []
     file_pattern = re.compile(r"^submissions/([a-zA-Z0-9]+)-([a-zA-Z0-9]+)\.csv")
 
-    if os.environ.get('GITHUB_EVENT_NAME') == 'pull_request_target' or local:
-        # Fetch the  PR number from the event json
-        pr_num = event['pull_request']['number']
-        print(f"PR number: {pr_num}")
+    #if os.environ.get('GITHUB_EVENT_NAME') == 'pull_request_target' or local:
+    # Fetch the  PR number from the event json
+    pr_num = event['pull_request']['number']
+    print(f"PR number: {pr_num}")
 
-        # Use the Github API to fetch the Pullrequest Object. Refer to details here: https://pygithub.readthedocs.io/en/latest/github_objects/PullRequest.html 
-        # pr is the Pullrequest object
-        pr = repo.get_pull(pr_num)
+    # Use the Github API to fetch the Pullrequest Object. Refer to details here: https://pygithub.readthedocs.io/en/latest/github_objects/PullRequest.html 
+    # pr is the Pullrequest object
+    pr = repo.get_pull(pr_num)
 
-        # fetch all files changed in this PR and add it to the files_changed list.
-        files_added +=[f for f in pr.get_files() if f.status=="added"]
-        files_changed +=[f for f in pr.get_files() if f.status!="added"]
+    # fetch all files changed in this PR and add it to the files_changed list.
+    files_added +=[f for f in pr.get_files() if f.status=="added"]
+    files_changed +=[f for f in pr.get_files() if f.status!="added"]
 
     if len(files_changed):
         # TODO add comment to PR?    
@@ -65,13 +68,16 @@ if __name__ == "__main__":
         
     if not len(files_added):
         sys.exit("Exiting automatic pipeline, no new results were submitted")
+    else:
+        print(f"{len(files_added)} CSV files have been submitted")
      
      
     # check that naming convention was adhered to
     for f in files_added:
         if file_pattern.match(f.filename) is None:
             sys.exit("Exiting automatic pipeline, submitted files did not adhere to naming convenction")
-    
+    else:
+        print("Submission files adhere to naming convention")
     #if pr is not None:
     #    pr.add_to_labels('other-files-updated')
     
@@ -82,7 +88,8 @@ if __name__ == "__main__":
     
     # probably because they are still in fork, and we only checked out branhc of base repo
     for f in files_added:
-        submission = pd.read_csv(f, sep=",", decimal=".", header=0).to_numpy()
+        print(f.filename)
+        submission = pd.read_csv(f.filename, sep=",", decimal=".", header=0).to_numpy()
         # check format requirements here
         if not check_format(gt, submission):
             sys.exit("Exiting CI pipeline, at least one submission file is not of required format")
