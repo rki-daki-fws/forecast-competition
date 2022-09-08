@@ -26,6 +26,7 @@ jobs:
         with:
           python-version: '3.9'
           cache: 'pip' # caching pip dependencies
+          # TODO set ref of submit branch here https://github.com/actions/checkout/issues/5
       - run: pip install -r requirements.txt
       
       - name: Check submission PR
