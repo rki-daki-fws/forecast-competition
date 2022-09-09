@@ -5,7 +5,7 @@ name: Check PullRequest
 # Controls when the workflow will run
 on:
   # Triggers the workflow on push or pull request events but only for the "main" branch
-  pull_request:
+  pull_request_target:
     branches: [ "submit" ]
 
   # Allows you to run this workflow manually from the Actions tab
@@ -26,6 +26,7 @@ jobs:
         with:
           python-version: '3.9'
           cache: 'pip' # caching pip dependencies
+          # TODO set ref of submit branch here https://github.com/actions/checkout/issues/5
       - run: pip install -r requirements.txt
       
       - name: Check submission PR
@@ -33,10 +34,10 @@ jobs:
         env:
           GH_TOKEN: ${{secrets.GITHUB_TOKEN}}
       
-      - name: add label to PR
-        uses: andymckay/labeler@master
-        with:
-          add-labels: "automerge"
+      #- name: add label to PR
+      #  uses: andymckay/labeler@master
+      #  with:
+      #    add-labels: "automerge"
           
       # merge PR, if steps have not thrown errors yet
       - id: automerge
