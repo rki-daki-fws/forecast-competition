@@ -1,4 +1,4 @@
-# example-competition
+# DAKI-FWS forecast competition
 
 ## Leaderboard
 
