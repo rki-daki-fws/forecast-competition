@@ -128,4 +128,6 @@ if __name__ == "__main__":
         # check format requirements here
         if not check_format(gt, s):
             sys.exit("Exiting CI pipeline, at least one submission file is not of required format")
-            
+    else:
+        # add automerge label to PR as no further checks are needed
+        pr.set_labels("automerge")

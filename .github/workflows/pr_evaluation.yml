@@ -34,10 +34,10 @@ jobs:
         env:
           GH_TOKEN: ${{secrets.GITHUB_TOKEN}}
       
-      - name: add label to PR
-        uses: andymckay/labeler@master
-        with:
-          add-labels: "automerge"
+      #- name: add label to PR
+      #  uses: andymckay/labeler@master
+      #  with:
+      #    add-labels: "automerge"
           
       # merge PR, if steps have not thrown errors yet
       - id: automerge
