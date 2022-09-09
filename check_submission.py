@@ -7,6 +7,7 @@ import json
 import os
 from datetime import date
 from dataclasses import dataclass
+from io import StringIO
 
 
 @dataclass
@@ -28,11 +29,7 @@ def check_format(df_gt, submission):
     """
 
     # load data from file and validate contents
-    pred = pd.read_parquet(submission.filepath)
-    submission.df = pred
-    # could allow CSVs here
-    # if submission.filepath.lower().split(".")[-1] == "csv":
-    #   submission.df = pd.read_csv(f.filename, sep=",", decimal=".", header=0)
+    pred = submission.df
     
     required_columns = ['model_date', 'target', 'location', 'sample_id', 'value']
     assert all([r in pred.columns.tolist() for r in required_columns])
@@ -118,9 +115,15 @@ if __name__ == "__main__":
         #assert os.path.isfile(f"challenge-data/incidences_reff_{s.reference_date}.csv")
         gt = pd.read_csv(f"challenge-data/incidences_reff_{s.reference_date}.csv", sep=",", decimal=".",
                          header=0)
-        # TODO currently working on merged branch. for security reasons, checkout submit branch in workflow
-        #  and then download file from merged branch here
+
+        # for security reasons working on pr base branch, need to download file contents from merged branch here
         # https://github.com/orgs/community/discussions/25961
+        file_contents = repo.get_contents(s.filepath, ref=f"refs/pull{pr.number}/merge")
+        with StringIO(file_contents.decoded_content.decode()) as io_obj:
+            s.df = pd.read_parquet(io_obj)
+            # could allow CSVs here
+            # if submission.filepath.lower().split(".")[-1] == "csv":
+            #   s.df = pd.read_csv(f.filename, sep=",", decimal=".", header=0)
 
         # check format requirements here
         if not check_format(gt, s):
