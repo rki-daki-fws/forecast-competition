@@ -8,6 +8,7 @@ import os
 from datetime import date
 from dataclasses import dataclass
 from io import StringIO
+from typing import Any
 
 
 @dataclass
@@ -16,7 +17,7 @@ class Submission:
     reference_date: str
     location_type: str
     target_type: str
-    df: None
+    df: pd.DataFrame
 
 
 def check_format(df_gt, submission):
@@ -30,6 +31,7 @@ def check_format(df_gt, submission):
 
     # load data from file and validate contents
     pred = submission.df
+    assert len(pred.values)
     
     required_columns = ['model_date', 'target', 'location', 'sample_id', 'value']
     assert all([r in pred.columns.tolist() for r in required_columns])
@@ -103,7 +105,8 @@ if __name__ == "__main__":
         if matched is None:
             sys.exit(f"Exiting automatic pipeline, submitted file did not adhere to naming convenction: {f.filename}")
         else:
-            submissions.append(Submission(f.filename, matched.groups()[1], matched.groups()[3], matched.groups()[4]))
+            submissions.append(Submission(f.filename, matched.groups()[1], matched.groups()[3], matched.groups()[4],
+                                          pd.DataFrame()))
     else:
         print("Submission files adhere to naming convention")
     #if pr is not None:
