@@ -1,8 +1,8 @@
 name: PR merge success
 
-# run on merged pull request or manual start
+# run on merged pull request from fork
 on:
-  pull_request:
+  pull_request_target:
     branches:
       - submit
     types:
