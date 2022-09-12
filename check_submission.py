@@ -121,7 +121,7 @@ if __name__ == "__main__":
 
         # for security reasons working on pr base branch, need to download file contents from merged branch here
         # https://github.com/orgs/community/discussions/25961
-        file_contents = repo.get_contents(s.filepath, ref=f"refs/pull{pr.number}/merge")
+        file_contents = repo.get_contents(s.filepath, ref=f"refs/pull/{pr.number}/merge")
         with StringIO(file_contents.decoded_content.decode()) as io_obj:
             s.df = pd.read_parquet(io_obj)
             # could allow CSVs here
