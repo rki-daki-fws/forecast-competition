@@ -103,7 +103,7 @@ if __name__ == "__main__":
         if matched is None:
             sys.exit(f"Exiting automatic pipeline, submitted file did not adhere to naming convenction: {f.filename}")
         else:
-            submissions.append(Submission(f.filename, matched.groups[1], matched.groups[3], matched.groups[4]))
+            submissions.append(Submission(f.filename, matched.groups()[1], matched.groups()[3], matched.groups()[4]))
     else:
         print("Submission files adhere to naming convention")
     #if pr is not None:
