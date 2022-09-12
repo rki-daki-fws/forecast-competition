@@ -100,8 +100,8 @@ if __name__ == "__main__":
     # check that naming convention was adhered to
     for f in files_added:
         matched = file_pattern.match(f.filename)
-        if matched:
-            sys.exit("Exiting automatic pipeline, submitted files did not adhere to naming convenction")
+        if matched is None:
+            sys.exit(f"Exiting automatic pipeline, submitted file did not adhere to naming convenction: {f.filename}")
         else:
             submissions.append(Submission(f.filename, matched.groups[1], matched.groups[3], matched.groups[4]))
     else:
