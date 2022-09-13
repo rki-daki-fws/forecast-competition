@@ -1,13 +1,15 @@
+import github.PullRequest
 import pandas as pd
 import numpy as np
-from github import Github
+import github
 import sys
 import re
 import json
 import os
 from datetime import date
 from dataclasses import dataclass
-from io import StringIO
+from io import StringIO, BytesIO
+import requests
 
 
 @dataclass
@@ -16,7 +18,7 @@ class Submission:
     reference_date: str
     location_type: str
     target_type: str
-    df: None
+    df: pd.DataFrame
 
 
 def check_format(df_gt, submission):
@@ -30,6 +32,7 @@ def check_format(df_gt, submission):
 
     # load data from file and validate contents
     pred = submission.df
+    assert len(pred.values)
     
     required_columns = ['model_date', 'target', 'location', 'sample_id', 'value']
     assert all([r in pred.columns.tolist() for r in required_columns])
@@ -48,13 +51,67 @@ def check_format(df_gt, submission):
     return True
 
 
+def load_csv(pr: github.PullRequest.PullRequest, filepath: str):
+    """
+    Dowloads file contents and reads into pd.DataFrame.
+    Utilizes PyGithub functionality to get file contents as str from the merged branch.
+    Also works on other files like txt etc.
+    pr: PullRequest object, which includes repo object of PR base repository
+    filepath: path to file which we want to download
+    returns: pd.DataFrame
+    """
+    file_contents = pr.base.repo.get_contents(filepath, ref=f"refs/pull/{pr.number}/merge")
+    with StringIO(file_contents.decoded_content.decode()) as io_obj:
+        df = pd.read_csv(io_obj, sep=",", decimal=".", header=0)
+    return df
+
+
+def load_parquet(pr: github.PullRequest.PullRequest, filepath: str):
+    """
+    Dowloads file contents and reads into pd.DataFrame. Workaround for PyGithub functionality, as github API can't read
+    file. Pieces together raw.githubusercontent URL of file from PR head branch, as file is not available physically
+    at base.repo/refs/pull/pr_number/merge.
+    Works on any type of file, but only necessary if file is not readable by github API.
+    Caution: works only on public repositories!
+    pr: PullRequest object, which includes repo object of PR head repository
+    filepath: path to file which we want to download
+    returns: pd.DataFrame
+    """
+    # TODO improve to streaming files in case of large file size
+    head_repo = pr.head.repo
+    head_branch = pr.head.raw_data["ref"]
+    # not fixed on commit. theroretically, file can already be in altered stated compared to PR
+    url = f'https://raw.githubusercontent.com/{head_repo.full_name}/refs/heads/{head_branch}/{filepath}'
+    req = requests.get(url, allow_redirects=True)
+
+    with BytesIO(req.content) as io_obj:
+        df = pd.read_parquet(io_obj)
+    return df
+
+
+def load_submission_data(pr: github.PullRequest.PullRequest, filepath: str):
+    """
+    Depending on file ending, calls appropriate function to download file and read into DataFrame.
+    pr: PullRequest object, which includes repo object of PR head repository
+    filepath: path to file which we want to download
+    returns: pd.DataFrame
+    """
+    file_ending = filepath.split(".")[-1].lower()
+    if file_ending == "csv":
+        return load_csv(pr, filepath)
+    elif file_ending == "parquet":
+        return load_parquet(pr, filepath)
+    else:
+        sys.exit(f"Unsupported file type:{file_ending}")
+
+
 if __name__ == "__main__":
     # check that only new results files were added
     print("Added token")
     token  = os.environ.get('GH_TOKEN')
     print(f"Token length: {len(token)}")
 
-    g = Github(token)
+    g = github.Github(token)
     repo_name = os.environ.get('GITHUB_REPOSITORY')
 
     if repo_name is None:
@@ -67,7 +124,6 @@ if __name__ == "__main__":
 
     event = json.load(open(os.environ.get('GITHUB_EVENT_PATH')))
 
-    pr = None
     files_added = []
     files_changed = []
     # expects files in submissions/TeamName/Date_Modelname_locationtype_forcastvalue.parquet
@@ -100,14 +156,13 @@ if __name__ == "__main__":
     # check that naming convention was adhered to
     for f in files_added:
         matched = file_pattern.match(f.filename)
-        if matched:
-            sys.exit("Exiting automatic pipeline, submitted files did not adhere to naming convenction")
+        if matched is None:
+            sys.exit(f"Exiting automatic pipeline, submitted file did not adhere to naming convenction: {f.filename}")
         else:
-            submissions.append(Submission(f.filename, matched.groups[1], matched.groups[3], matched.groups[4]))
+            submissions.append(Submission(f.filename, matched.groups()[1], matched.groups()[3], matched.groups()[4],
+                                          pd.DataFrame()))
     else:
         print("Submission files adhere to naming convention")
-    #if pr is not None:
-    #    pr.add_to_labels('other-files-updated')
 
     for s in submissions:
         print(s.filepath)
@@ -118,12 +173,7 @@ if __name__ == "__main__":
 
         # for security reasons working on pr base branch, need to download file contents from merged branch here
         # https://github.com/orgs/community/discussions/25961
-        file_contents = repo.get_contents(s.filepath, ref=f"refs/pull{pr.number}/merge")
-        with StringIO(file_contents.decoded_content.decode()) as io_obj:
-            s.df = pd.read_parquet(io_obj)
-            # could allow CSVs here
-            # if submission.filepath.lower().split(".")[-1] == "csv":
-            #   s.df = pd.read_csv(f.filename, sep=",", decimal=".", header=0)
+        s.df = load_submission_data(pr, s.filepath)
 
         # check format requirements here
         if not check_format(gt, s):

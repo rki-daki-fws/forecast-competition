@@ -8,13 +8,10 @@ on:
   pull_request_target:
     branches: [ "submit" ]
 
-  # Allows you to run this workflow manually from the Actions tab
-  workflow_dispatch:
-
 # A workflow run is made up of one or more jobs that can run sequentially or in parallel
 jobs:
   # This workflow contains a single job called "build"
-  build:
+  check_PR:
     # The type of runner that the job will run on
     runs-on: ubuntu-latest
 
@@ -26,7 +23,6 @@ jobs:
         with:
           python-version: '3.9'
           cache: 'pip' # caching pip dependencies
-          # TODO set ref of submit branch here https://github.com/actions/checkout/issues/5
       - run: pip install -r requirements.txt
       
       - name: Check submission PR
@@ -45,7 +41,14 @@ jobs:
         uses: "pascalgn/automerge-action@v0.15.3"
         env:
           GITHUB_TOKEN: "${{ secrets.GITHUB_TOKEN }}"
-      - name: feedback
+      - name: if_merged
+        if: ${{ steps.automerge.outputs.mergeResult }} == "merged"
         run: |
-          echo "Pull request ${{ steps.automerge.outputs.pullRequestNumber }}"
-          echo "status ${{ steps.automerge.outputs.mergeResult }}"
+          echo "Pull request ${{ steps.automerge.outputs.pullRequestNumber }} merged"
+          echo "Forecast successfully submitted. Thank you for your participation!"
+      - name: if_not_merged
+        # let pipeline fail
+        if: ${{ steps.automerge.outputs.mergeResult }} != "merged"
+        run: |
+          echo "Pull request could not be merged automatically. Waiting for manual review."
+          exit 1

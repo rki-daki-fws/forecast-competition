@@ -3,15 +3,16 @@ name: Evaluate submission
 # run on merged pull request or manual start
 on:
  workflow_run:
-    workflows: [Manual eval trigger, PR merge success]
+    workflows: [Manual eval trigger, PR merge success, Check PullRequest]
+    # https://docs.github.com/en/actions/using-workflows/events-that-trigger-workflows#running-a-workflow-based-on-the-conclusion-of-another-workflow
     types:
       - completed
 
 # only after PR was merged
 jobs:
-  # TODO add better job name
   evaluate:
     runs-on: ubuntu-latest
+    if: ${{ github.event.workflow_run.conclusion == 'success' }}
     steps:
       - uses: actions/checkout@v3
         with:

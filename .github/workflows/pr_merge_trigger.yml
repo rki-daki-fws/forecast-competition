@@ -2,7 +2,7 @@ name: PR merge success
 
 # only runs on manual merge of pull request from fork anymore?!
 on:
-  pull_request:
+  pull_request:  # stay on pull_request, not pull_request target
     branches:
       - submit
     types:
@@ -10,8 +10,7 @@ on:
 
 # only after PR was merged
 jobs:
-  # TODO add better job name
-  if_merged:
+  verify_merge:
     if: github.event.pull_request.merged == true
     runs-on: ubuntu-latest
     steps:
