@@ -1,10 +1,21 @@
 # Data submission instructions
 
 In the following section we will explain the process and requirements for a team to submit forcasts to the forecasting competition.
-All forecasts will be submitted to the [submissions/](./) folder as a parquet file follwing a predefined naming convention and data format. A detailed introduction of the naming convention and data format can be found below.
+All forecasts will be submitted to a team-folder in the [submissions](./) folder as a parquet file follwing a predefined naming convention and data format. A detailed introduction of the naming convention and data format can be found below. For example the team `testTeam` will submit all results files to `submissions/testTeam/`
 
-After having added the forecasting results a pull request to the *submission* branch of the competition repository can be created.
-The submission will be checked and evaluated, if all requirements are met.
+To submit a forecast follwing steps are needed:
+* create a publicly available fork from this repository
+* in the submissions directory, create a new directory for your team
+* place all your forecasts in this directory
+* commit and push your changes
+* open a pull request to the submit branch of the competition repository
+
+
+Please make sure that
+* your commits show only added files, no changed or removed ones
+* all submission files adhere to the naming convention and format requirements
+If these requirements are met, your pull request will be automatically accepted and your submissions will be automatically evaluated and their scores added to the leaderboard.
+
 
 ## Example
 
@@ -13,7 +24,7 @@ See [this folder](https://github.com/rki-daki-fws/forecast-competition/blob/main
 - `example.R`  a basic script showing the generation of a submission file in R
 
 
-![Example Results Structure](https://github.com/rki-daki-fws/forecast-competition/blob/main/examples/example.png)
+![Example Results Structure](https://github.com/rki-daki-fws/forecast-competition/blob/main/examples/example.PNG))
 
 
 ## Forecasting Results
@@ -122,6 +133,10 @@ For each unique combination of `location` and `target` multiple forecast `value`
 
 This is the actual value of the forecast. The are no restrictions other than the value of `value` being positive. 
 
+## Parquet Files
 
+Parquet files can easily be written from dataframes in R (`arrow` library is needed) and python (`pyarrow` and `pandas` needed). 
 
+[writing parquet files in R](https://arrow.apache.org/docs/r/reference/write_parquet.html)
 
+[writing parquet files in python](https://pandas.pydata.org/pandas-docs/version/1.1/reference/api/pandas.DataFrame.to_parquet.html)
