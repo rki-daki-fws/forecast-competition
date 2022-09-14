@@ -1,6 +1,6 @@
 name: PR merge success
 
-# run on merged pull request or manual start
+# only runs on manual merge of pull request from fork anymore?!
 on:
   pull_request:  # stay on pull_request, not pull_request target
     branches:
