@@ -42,13 +42,13 @@ jobs:
         env:
           GITHUB_TOKEN: "${{ secrets.GITHUB_TOKEN }}"
       - name: if_merged
-        if: ${{ steps.automerge.outputs.mergeResult }} == "merged"
+        if: ${{ steps.automerge.outputs.mergeResult == 'merged'}}
         run: |
           echo "Pull request ${{ steps.automerge.outputs.pullRequestNumber }} merged"
           echo "Forecast successfully submitted. Thank you for your participation!"
       - name: if_not_merged
         # let pipeline fail
-        if: ${{ steps.automerge.outputs.mergeResult }} != "merged"
+        if: ${{ steps.automerge.outputs.mergeResult != 'merged'}}
         run: |
           echo "Pull request could not be merged automatically. Waiting for manual review."
           exit 1
