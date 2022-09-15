@@ -1,9 +1,9 @@
 # Data submission instructions
 
-In the following section we will explain the process and requirements for a team to submit forcasts to the forecasting competition.
-All forecasts will be submitted to a team-folder in the [submissions](./) folder as a parquet file follwing a predefined naming convention and data format. A detailed introduction of the naming convention and data format can be found below. For example the team `testTeam` will submit all results files to `submissions/testTeam/`
+In the following section, we will explain the process and requirements for a team to submit forecasts to the forecasting competition.
+All forecasts will be submitted to a team-folder in the [submissions](./) folder as a parquet file following a predefined naming convention and data format. A detailed introduction of the naming convention and data format can be found below. For example, the team `testTeam` will submit all results files to `submissions/testTeam/`
 
-To submit a forecast follwing steps are needed:
+To submit a forecast following steps are needed:
 * create a publicly available fork from this repository
 * in the submissions directory, create a new directory for your team
 * place all your forecasts in this directory
@@ -76,7 +76,7 @@ No additional columns are allowed.
 
 A row is a realization (sample) of a forecast of either the number of cases or the r-value (`targettype`) for the specified `target` date and `location`.  
 
-It is generally allowed to submit incomplete data i.e. some counties might be missing.
+It is generally allowed to submit incomplete data, i.e., some counties might be missing.
 
 ### `target`
 
@@ -84,14 +84,14 @@ Values in the `target` column must be a date in the format
 
     YYYY-MM-DD
 
-This date corresponds to the forecasting date. For example if the `model_date` given in the file name is `2021-04-01` and the date in `target` is `2021-04-02` then `value` will hold the 1-day-ahead forecast.
+This date corresponds to the forecasting date. For example, if the `model_date` given in the file name is `2021-04-01` and the date in `target` is `2021-04-02` then `value` will hold the 1-day-ahead forecast.
 
 ### `location`
 
 The values specified in `location` must match the definition of the `locationtype` in the results file name, such that if `LK` is the `locationtype` only valid counties (Landkreise) can be used in `location` and no states (Bundesländer). Same applies for `BL` as `locationtype`. 
 
 #### County - Landkreis
-The county ID is based on the official municipality key/Amtlicher Gemeindeschlüssel (AGS), which can be retrieved from the portal of [the Federal Statistical Office](https://www.destatis.de/DE/Themen/Laender-Regionen/Regionales/Gemeindeverzeichnis/Administrativ/Archiv/GVAuszugQ/AuszugGV2QAktuell.html). The county ID results from the code of the federal state (Land), the regional district (RB) and the county (LK). For a more accurate representation of Berlin, the 12 city districts are broken down as separate "Landkreise". Here we deviate from the specifications of the AGS. The following allocation is made:
+The county ID is based on the official municipality key - Amtlicher Gemeindeschlüssel (AGS) -, which can be retrieved from the portal of [the Federal Statistical Office](https://www.destatis.de/DE/Themen/Laender-Regionen/Regionales/Gemeindeverzeichnis/Administrativ/Archiv/GVAuszugQ/AuszugGV2QAktuell.html). The county ID is a concatenation of the code of the federal state (Land), the regional district (RB) and an addition for the county (LK) in this order. For a more accurate representation of Berlin, the 12 city districts are broken down as separate "Landkreise". Here, we deviate from the specifications of the AGS. The following allocation is made:
 
 | IdLandkreis | Bezirk | IdLandkreis | Bezirk |  
 | ----------- | ------ | ----------- | ------ |  
@@ -104,7 +104,7 @@ The county ID is based on the official municipality key/Amtlicher Gemeindeschlü
 
 #### State - Bundesland
 
-Like the county Id is the State Id based on the AGS and is just the code of the federal state(Land).
+The federal state ID equals the first two digits of the AGS and is therefore included in the country ID. The federal state IDs are listed below:
 
 | IdBundesland | Bundsland |  
 | ----------- | ------ |   
@@ -127,7 +127,7 @@ Like the county Id is the State Id based on the AGS and is just the code of the 
 
 ### `sample_id`
 
-For each unique combination of `location` and `target` multiple forecast `value`s will be submitted. This is meant to reflect the models uncertainty in the forecast. For 100 samples the `sample_id` will be an integer starting at one upto 100. For a forecasting horizon of 28 days one would essentially submit 100 different trajectories/time series of length 28 days.
+For each unique combination of `location` and `target`, multiple forecast `value`s will be submitted. This is meant to reflect the models uncertainty in the forecast. For 100 samples, the `sample_id` will be an integer starting at one up to 100. For a forecasting horizon of 28 days, one would essentially submit 100 different trajectories/time series of length 28 days.
 
 ### `value`
 
