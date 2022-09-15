@@ -4,6 +4,7 @@ import os
 import sys
 from datetime import date
 from github import Github
+import glob
 import dataframe_image as dfi
 
 
@@ -61,37 +62,38 @@ if __name__ == "__main__":
     # open leaderboard
     lb = pd.read_csv("leaderboard.csv", header=0)
     
-    submissions_dir = "./submissions"
-    # TODO update to submissions/teamname/file structure
+    submissions_dir = "submissions"
     # get all submission filenames
-    submission_files = [f for f in os.listdir(submissions_dir) if os.path.isfile(os.path.join(submissions_dir, f))]
+    submission_files = glob.glob(f"{submissions_dir}{os.path.sep}*{os.path.sep}*.parquet")
+    # naming already validated, can trust it here
     
     to_evaluate = []
     # check which submissions were not evaluated yet
     for submission in submission_files:
-        team, model = submission[:-4].split("-")
-        # TODO update leaderboard columns
-        if not len(lb.loc[(lb["team"] == team) & (lb["model"] == model)]): # expects specific leaderboard columns
+        _, team, filename = submission.split(os.path.sep)
+        date, model = filename.split("_")[:2]
+        if not len(lb.loc[(lb["team"] == team) & (lb["model"] == model)]):  # expects specific leaderboard columns
             to_evaluate.append(submission)
     
     if len(to_evaluate):
         # run evaluation
-        gt = pd.read_csv("challenge-data/groundtruth.csv").to_numpy()  # TODO look for gt matching submission file
-        
         lb_entries = lb.values.tolist()
         lb_columns = lb.columns.values.tolist()
         
         for f in to_evaluate:
-            evaluation_file = os.path.join(submissions_dir, f)
-            pred = pd.read_csv(evaluation_file).to_numpy()  # TODO update parquet file
+            gt = pd.read_csv(f'challenge-data{os.path.sep}incidences_reff_{date}.csv').to_numpy()
+            # TODO catch FileNotFoundError?
+
+            pred = pd.read_parquet(f).to_numpy()  # pd.read_csv(f).to_numpy()
             # format has already been validated, we can trust it here.
 
             score = evaluate(gt, pred)
-        
+            team, f_remaining = f.split(os.path.sep)[1:]
+            model = f_remaining.split("_")[1]
+
             # add to leaderboard
-            submission_date = date.fromtimestamp(os.path.getmtime(evaluation_file))
-            team, model = f[:-4].split("-")
-            lb_entries.append([submission_date, team, model, score])
+            submission_date = date.fromtimestamp(os.path.getmtime(f))
+            lb_entries.append([submission_date, team, model, score])  # TODO add data state date as column
 
         update_leaderboard_locally(lb_entries, lb_columns)
 
