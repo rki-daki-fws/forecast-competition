@@ -2,15 +2,54 @@ import pandas as pd
 import numpy as np
 import os
 import sys
-from datetime import date
+import datetime
 from github import Github
 import glob
 import dataframe_image as dfi
+from warnings import warn
+from check_submission import Submission
 
 
-def evaluate(ground_truth, prediction):
-    mse = np.square(ground_truth[:, 1] - prediction[:, 1]).mean()
-    return mse
+def evaluate(ground_truth: pd.core.frame.DataFrame, submission: Submission):
+    """
+    Find the intersection of levels date and location in ground truth and prediction, then calculate root mean squared
+    error (RMSE) as a simple metric of evaluation.
+    gt: DataFrame with columns [target, location, value]
+    submission: Submission object inclduing DataFrame with columns [model_date, target, location, sample_id, value]
+    return: tuple of length 3:
+        float,RMSE of predictions and ground truth
+        int, number of days that were forecasted
+        int, number of locations for which forecast was done
+    """
+    pred = submission.df
+    gt = ground_truth
+    if isinstance(pred.target[0], str):
+        pred.target = pred.target.apply(datetime.datetime.strptime, args=['%Y-%m-%d']).dt.date
+
+    if isinstance(gt.target[0], str):
+        gt.target = gt.target.apply(datetime.datetime.strptime, args=['%Y-%m-%d']).dt.date
+    # TODO add more dtype checks and conversions
+
+    # select by value, perhaps data is not contiguous
+    date_intersect = set(pred.target).intersection(set(gt.target))
+    location_intersect = set(pred.location).intersection(set(gt.location))
+    forecast_len = len(date_intersect)
+    num_locations = len(location_intersect)
+
+    if not forecast_len or not num_locations:
+        print("Could not match prediction to ground truth data in time or location")
+        return None, 0, 0
+
+    reduced_gt = gt[(gt.target.isin(date_intersect)) & (gt.location.isin(location_intersect))]
+    reduced_pred = pred[(pred.target.isin(date_intersect)) & (pred.location.isin(location_intersect))]
+
+    # gt values repeated for all sample_ids
+    merged_df = pd.merge(reduced_pred, reduced_gt, how="left", on=["target", "location"])
+
+    # calculate simple metric
+    rmse = np.sqrt(np.nanmean(np.square(merged_df["value_x"] - merged_df["value_y"])))  # deal with nan values in data
+
+    return rmse, forecast_len, num_locations
 
 
 def init_repo_obj(repo_name_fallback):
@@ -78,40 +117,51 @@ if __name__ == "__main__":
     if len(to_evaluate):
         # run evaluation
         lb_entries = lb.values.tolist()
+        num_entries_before = len(lb_entries)
         lb_columns = lb.columns.values.tolist()
         
         for f in to_evaluate:
-            gt = pd.read_csv(f'challenge-data{os.path.sep}incidences_reff_{date}.csv').to_numpy()
+            team, f_remaining = f.split(os.path.sep)[1:]
+            date, model, location_type, pred_variable = f_remaining.split(".")[0].split("_")
+
+            gt = pd.read_csv(
+                os.path.join("challenge-data", "evaluation", f'{date}_{location_type}_{pred_variable}.csv'))
             # TODO catch FileNotFoundError?
 
-            pred = pd.read_parquet(f).to_numpy()  # pd.read_csv(f).to_numpy()
+            pred = pd.read_parquet(f)  # pd.read_csv(f).to_numpy()
             # format has already been validated, we can trust it here.
 
-            score = evaluate(gt, pred)
-            team, f_remaining = f.split(os.path.sep)[1:]
-            model = f_remaining.split("_")[1]
+            submiss = Submission(f, date, location_type, pred_variable, pred)
+            score, forecast_len, num_locations = evaluate(gt, submiss)
+            if score is None:
+                warn(f"Dates or locations of prediction file {f} don't match ground truth!")
+                continue
 
             # add to leaderboard
-            submission_date = date.fromtimestamp(os.path.getmtime(f))
-            lb_entries.append([submission_date, team, model, score])  # TODO add data state date as column
+            submission_date = datetime.date.fromtimestamp(os.path.getmtime(f))
+            # TODO add forecast_len, num_locations as column
+            lb_entries.append([submission_date, team, model, date, location_type, pred_variable, score])
 
-        update_leaderboard_locally(lb_entries, lb_columns)
+        if len(lb_entries) > num_entries_before:
+            update_leaderboard_locally(lb_entries, lb_columns)
 
-        # update leaderboard file and snapshot using github API
-        update_repo_file(repo, "leaderboard.csv", "submit", "r")
-        update_repo_file(repo, "leaderboard_snapshot.png", "submit", "rb")
-        
-        # merge changes to main branch
-        # TODO open pull request
-        #  merge PR
-        # try:
-        #     base = repo.get_branch("main")
-        #     head = repo.get_branch("submit")
-        #
-        #     merge_to_master = repo.merge("main",
-        #                         head.commit.sha, "Merge new submissions to master")
-        #
-        # except Exception as ex:
-        #     sys.exit(ex)
+            # update leaderboard file and snapshot using github API
+            update_repo_file(repo, "leaderboard.csv", "submit", "r")
+            update_repo_file(repo, "leaderboard_snapshot.png", "submit", "rb")
+
+            # merge changes to main branch
+            # TODO open pull request
+            #  merge PR
+            # try:
+            #     base = repo.get_branch("main")
+            #     head = repo.get_branch("submit")
+            #
+            #     merge_to_master = repo.merge("main",
+            #                         head.commit.sha, "Merge new submissions to master")
+            #
+            # except Exception as ex:
+            #     sys.exit(ex)
+        else:
+            sys.exit("No submissions file could be evaluated. Failing pipeline")
     else:
         print("No new submissions to evaluate!")

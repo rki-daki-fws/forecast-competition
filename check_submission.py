@@ -166,10 +166,9 @@ if __name__ == "__main__":
 
     for s in submissions:
         print(s.filepath)
-        # first verify that there is groundtruth file that matches
-        #assert os.path.isfile(f"challenge-data/incidences_reff_{s.reference_date}.csv")
-        gt = pd.read_csv(f"challenge-data/incidences_reff_{s.reference_date}.csv", sep=",", decimal=".",
-                         header=0)
+        # open groundtruth file that matches
+        gt = pd.read_csv(f"challenge-data/evaluation/{s.reference_date}_{s.location_type}_{s.target_type}.csv",
+                         sep=",", decimal=".", header=0)
 
         # for security reasons working on pr base branch, need to download file contents from merged branch here
         # https://github.com/orgs/community/discussions/25961
