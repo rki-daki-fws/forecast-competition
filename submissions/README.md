@@ -39,7 +39,7 @@ See [this folder](https://github.com/rki-daki-fws/forecast-competition/blob/main
 The teams will generate case or r-value forecasts for a time horizon of 28 days for either the German States (Bundesland) or Counties (Landkreis).  
 Each forecast results file name should following this naming convention:
 
-    YYYY-MM-DD_team_model_locationtype_targettype.parquet
+    team/YYYY-MM-DD_model_locationtype_targettype.parquet
     
 where
 
