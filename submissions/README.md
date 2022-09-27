@@ -8,19 +8,20 @@ To submit a forecast following steps are needed:
 * in the submissions directory, create a new directory for your team
 * place all your forecasts in this directory
 * commit and push your changes
-* open a pull request to the submit branch of the competition repository
+* open a pull request to the `submit` branch of the competition repository
 
 
 Please make sure that
 * your commits show only added files, no changed or removed ones
 * all submission files adhere to the naming convention and format requirements
+
 If these requirements are met, your pull request will be automatically accepted and your submissions will be automatically evaluated and their scores added to the leaderboard.
 
 
 ## Example
 
 See [this folder](https://github.com/rki-daki-fws/forecast-competition/blob/main/examples) for an illustration of a (hypothetical) submission file. 
-- `2021-03-31_testTeam_testModel_LK_cases.parquet` the hypothetical submission file
+- `testTeam/2021-03-31_testModel_LK_cases.parquet` the hypothetical submission file
 - `example.R`  a basic script showing the generation of a submission file in R
 
 
@@ -32,11 +33,11 @@ See [this folder](https://github.com/rki-daki-fws/forecast-competition/blob/main
 ### Summary
 
 - daily cases or r-values
-- time horizon of 28 days
+- time horizon of up to 28 days, starting from the date in the file name
 - county (Landkreis) or states (Bundeland)
 - 100 samples for each point in time and geographical entity
 
-The teams will generate case or r-value forecasts for a time horizon of 28 days for either the German States (Bundesland) or Counties (Landkreis).  
+The teams will generate case or r-value forecasts for a time horizon of up to 28 days for either the German States (Bundesland) or Counties (Landkreis).  
 Each forecast results file name should following this naming convention:
 
     team/YYYY-MM-DD_model_locationtype_targettype.parquet
@@ -51,7 +52,8 @@ where
 - `locationtype` is the kind of geographical entities for which forecasts are made (`LK` or `BL`) and
 - `targettype` is either `cases` or `rvalue`. 
 
-The date YYYY-MM-DD is the `model_date`, the latest date for which data is being used to fit the forecasting model. 
+The date YYYY-MM-DD is the `model_date`, it corresponds to file in the `challenge-data/truth` directory which contains data leading up to that date.
+That date is also the first day in the forecast period (see FAQs). 
 
 The teams are allowed to submit forecasts for Bundesländer and Landkreise. `location` can take any of the following values:
 
@@ -84,7 +86,7 @@ Values in the `target` column must be a date in the format
 
     YYYY-MM-DD
 
-This date corresponds to the forecasting date. For example, if the `model_date` given in the file name is `2021-04-01` and the date in `target` is `2021-04-02` then `value` will hold the 1-day-ahead forecast.
+This date corresponds the data snapshot date, which the forecast is based on and also represents the first day of the 28 day forecasting period. For example, if the `model_date` given in the file name is `2021-04-18`, then the value of `target` should be in the interval *[2021-04-18, 2021-05-15]*. The `value` column will hold the forecast value for that day.
 
 ### `location`
 
@@ -140,3 +142,40 @@ Parquet files can easily be written from dataframes in R (`arrow` library is nee
 [writing parquet files in R](https://arrow.apache.org/docs/r/reference/write_parquet.html)
 
 [writing parquet files in python](https://pandas.pydata.org/pandas-docs/version/1.1/reference/api/pandas.DataFrame.to_parquet.html)
+
+
+## Frequently asked questions
+### For which periods should I forecast?
+You may submit forecasts for each of these periods:
+
+| start date | end date   |
+|------------|------------|
+| 2021-04-18 | 2021-05-15 |
+| 2021-04-25 | 2021-05-22 |
+| 2021-05-02 | 2021-05-29 |
+| 2021-05-09 | 2021-06-05 |
+| 2021-05-16 | 2021-06-12 |
+| 2021-05-23 | 2021-06-19 |
+| 2021-05-30 | 2021-06-26 |
+| 2021-06-06 | 2021-07-03 |
+| 2021-06-13 | 2021-07-10 |
+| 2021-06-20 | 2021-07-17 |
+| 2021-06-27 | 2021-07-24 |
+| 2021-07-04 | 2021-07-31 |
+| 2021-07-11 | 2021-08-07 |
+| 2021-07-18 | 2021-08-14 |
+| 2021-07-25 | 2021-08-21 |
+
+
+### For how many days should I forecast?
+For each forcast that you submit, please forcast a maximum of 28 days into the future, starting from the snapshot date. Depending on your
+model, you might want to forecast less than 28 days. In this case, you don't need to forecast consecutive days.
+
+### Why was my submission pull request not automatically merged?
+There might be a number of reasons:
+* Your submission file did not adhere to the naming convention
+* Your submission file did not adhere to the required data format
+* Besides new submissions files your pull request also included changes to existing files
+
+While this might be inconvenient,  rest assured that your submission will not go unnoticed and we will look into it and 
+possibly merge manually.

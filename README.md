@@ -2,30 +2,29 @@
 
 This competition is about forecasting the development of the COVID19 pandemic in Germany, as part of the DAKI FWS project.
 
-In the first phase of the competition, we invite all participants to upload their forecast data which will be automatically evaluated by a simple
-metric of fit (RSME). A public leaderboard will display the results all submissions scored.
+We invite all participants to upload their forecast data until **October 9th 2022**.
+The submissions will first be automatically evaluated by a simple metric of fit (RSME) and the results will be displayed in a public leaderboard.
 
-In the next phase, we will analyse the submissions more in-depth with more advanced metrics.
+After all participants submitted their forecasts, we will analyse the submissions more in-depth with more advanced metrics.
 We thank you all for participating!
 
 ## Data for training and evaluation
-You can find data for training and evaluation purposes in the `challenge-data` directories `truth` and `evaluation` respectively.
+You can find data for training and evaluation purposes in the `challenge-data` directories `truth` and `evaluation`.
 
-The target variables are currently case numbers of infections and the basic reproductive number (or R-value). In the future
-this might be expanded to other target variables, such as epidemiological outbreak signals.
+The target variables are case numbers of infections and the basic reproductive number (or R-value). 
 
 You will notice that the files in the `challenge-data/truth` directory have a date associated to them in their filename. 
-That is the time the data snapshot was taken. In their contents however, the date ranges between the files overlap, 
-though with possible different target values.
-As time progresses, past values can change due to reporting delay. That is why we provide you with different files for 
-training your models.  
+That is the time the data snapshot was taken and the files contain only data until the previous day.
+As time progresses, past values can change due to reporting delay. That is why we provide you with the different data snapshots.  
 
-The data in the `challenge-data/evaluation` directory will be used for grading the forecasting performance of the submissions.
+The data in the `challenge-data/evaluation` directory can be perceived as the final state of the data and will be used for grading the forecasting performance of the submissions.
 Please use these only for a final evaluation of your models, not for training.
 
 ## How to take part
+To take part in the forecasting competition, please submit your predictions until October 9th 2022 via a pull request to this repo's `submit` branch.
+You can upload forecasts for any of the files in the `challenge-data/truth` directory. Each forecast should predict values for up to 28 days, starting at the date in the file name.
 
-To take part in the forecasting competition, please follow these [instructions](https://github.com/rki-daki-fws/forecast-competition/blob/main/submissions/README.md).
+For more detailed instructions, please see [here](https://github.com/rki-daki-fws/forecast-competition/blob/main/submissions/README.md).
 
 ## Leaderboard
 
