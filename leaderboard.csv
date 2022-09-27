@@ -1,2 +1,3 @@
 submission_date,team,model,target_date,location_type,variable,score
-
+2022-09-16,TestTeam,testModel,2022-09-15,LK,cases,186.24040486398258
+2022-09-16,aussTestTeam,aussModel,2022-09-15,LK,cases,144.5972500290775
