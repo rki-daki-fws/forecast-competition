@@ -16,6 +16,10 @@ The target variables are case numbers of infections and the basic reproductive n
 You will notice that the files in the `challenge-data/truth` directory have a date associated to them in their filename. 
 That is the time the data snapshot was taken and the files contain only data until the previous day.
 As time progresses, past values can change due to reporting delay. That is why we provide you with the different data snapshots.  
+You can use these files to train your models. Just make sure that you don't use data from the future in training to predict values in the past.
+I.e. to predict infection cases for the period of April 18th 2021 to May 15th 2021 you would only use the file `2021-04-18_LK_cases.csv`.
+If you wanted to forecast the 28 day period starting on July 4th 2021, you could train your model with only the snapshot data of that day.
+Alternatively, you could use all prior snapshot files, to account for reporting delays in your model.
 
 The data in the `challenge-data/evaluation` directory can be perceived as the final state of the data and will be used for grading the forecasting performance of the submissions.
 Please use these only for a final evaluation of your models, not for training.
