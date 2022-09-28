@@ -52,8 +52,8 @@ where
 - `locationtype` is the kind of geographical entities for which forecasts are made (`LK` or `BL`) and
 - `targettype` is either `cases` or `rvalue`. 
 
-The date YYYY-MM-DD is the `model_date`, it corresponds to file in the `challenge-data/truth` directory which contains data leading up to that date.
-That date is also the first day in the forecast period (see FAQs). 
+The date YYYY-MM-DD is the `snapshot_date`, it corresponds to file in the `challenge-data/truth` directory which contains data leading up to that date.
+That date is also the first day in the forecast period (see [FAQs](#frequently-asked-questions)). 
 
 The teams are allowed to submit forecasts for Bundesländer and Landkreise. `location` can take any of the following values:
 
@@ -86,7 +86,7 @@ Values in the `target` column must be a date in the format
 
     YYYY-MM-DD
 
-This date corresponds the data snapshot date, which the forecast is based on and also represents the first day of the 28 day forecasting period. For example, if the `model_date` given in the file name is `2021-04-18`, then the value of `target` should be in the interval *[2021-04-18, 2021-05-15]*. The `value` column will hold the forecast value for that day.
+This date corresponds the data snapshot date, which the forecast is based on and also represents the first day of the 28 day forecasting period. For example, if the data snapshot date given in the file name is `2021-04-18`, then the value of `target` should be in the interval *[2021-04-18, 2021-05-15]*. The `value` column will hold the forecast value for that day.
 
 ### `location`
 
