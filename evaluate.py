@@ -89,7 +89,7 @@ def update_leaderboard_locally(entries, columns):
     Overwrite local files of leaderboard csv and snapshot image
     return: None """
     new_lb = pd.DataFrame(entries, columns=columns)
-    new_lb.sort_values("score", ascending=False, inplace=True)  # sort by score
+    new_lb.sort_values("score", ascending=True, inplace=True)  # sort by score
     new_lb.to_csv("leaderboard.csv", index=False)  # update leaderboard file in repo
     dfi.export(new_lb.iloc[:10, :], "leaderboard_snapshot.png", table_conversion="matplotlib")
 
@@ -125,8 +125,7 @@ if __name__ == "__main__":
             date, model, location_type, pred_variable = f_remaining.split(".")[0].split("_")
 
             gt = pd.read_csv(
-                os.path.join("challenge-data", "evaluation", f'{date}_{location_type}_{pred_variable}.csv'))
-            # TODO catch FileNotFoundError?
+                os.path.join("challenge-data", "evaluation", f'2022-09-15_{location_type}_{pred_variable}.csv'))
 
             pred = pd.read_parquet(f)  # pd.read_csv(f).to_numpy()
             # format has already been validated, we can trust it here.

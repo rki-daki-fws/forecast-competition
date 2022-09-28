@@ -34,11 +34,10 @@ def check_format(df_gt, submission):
     pred = submission.df
     assert len(pred.values)
     
-    required_columns = ['model_date', 'target', 'location', 'sample_id', 'value']
+    required_columns = ['target', 'location', 'sample_id', 'value']
     assert all([r in pred.columns.tolist() for r in required_columns])
 
-    # check that model_date & target are dates
-    assert isinstance(pred.loc[0, "model_date"], date)
+    # check that target are dates
     assert isinstance(pred.loc[0, "target"], date)
 
     # check that value is either int or float, depending on variable type
@@ -158,16 +157,19 @@ if __name__ == "__main__":
         matched = file_pattern.match(f.filename)
         if matched is None:
             sys.exit(f"Exiting automatic pipeline, submitted file did not adhere to naming convenction: {f.filename}")
-        else:
+        elif matched is not None and \
+                os.path.isfile(f"challenge-data/truth/{matched.groups()[1]}_{ matched.groups()[3]}_{matched.groups()[4]}.csv"):
             submissions.append(Submission(f.filename, matched.groups()[1], matched.groups()[3], matched.groups()[4],
                                           pd.DataFrame()))
+        else:
+            sys.exit(f"Exiting automatic pipeline, your submission does not seem to match one of the forecasting periods: {f.filename}")
     else:
         print("Submission files adhere to naming convention")
 
     for s in submissions:
         print(s.filepath)
         # open groundtruth file that matches
-        gt = pd.read_csv(f"challenge-data/evaluation/{s.reference_date}_{s.location_type}_{s.target_type}.csv",
+        gt = pd.read_csv(f"challenge-data/evaluation/2022-09-15_{s.location_type}_{s.target_type}.csv",
                          sep=",", decimal=".", header=0)
 
         # for security reasons working on pr base branch, need to download file contents from merged branch here
