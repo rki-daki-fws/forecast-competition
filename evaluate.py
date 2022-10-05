@@ -89,7 +89,7 @@ def update_leaderboard_locally(entries, columns):
     Overwrite local files of leaderboard csv and snapshot image
     return: None """
     new_lb = pd.DataFrame(entries, columns=columns)
-    new_lb.sort_values("score", ascending=True, inplace=True)  # sort by score
+    new_lb.sort_values("score", ascending=True, inplace=True, ignore_index=True)  # sort by score
     new_lb.to_csv("leaderboard.csv", index=False)  # update leaderboard file in repo
     dfi.export(new_lb.iloc[:10, :], "leaderboard_snapshot.png", table_conversion="matplotlib")
 
