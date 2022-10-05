@@ -3,3 +3,4 @@ pandas
 PyGithub
 dataframe-image
 pyarrow
+lxml

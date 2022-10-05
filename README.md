@@ -25,6 +25,7 @@ The data in the `challenge-data/evaluation` directory can be perceived as the fi
 Please use these only for a final evaluation of your models, not for training.
 
 ## How to take part
+
 To take part in the forecasting competition, please submit your predictions until October 9th 2022 via a pull request to this repo's `submit` branch.
 You can upload forecasts for any of the files in the `challenge-data/truth` directory. Each forecast should predict values for up to 28 days, starting at the date in the file name.
 
