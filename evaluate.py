@@ -125,7 +125,7 @@ if __name__ == "__main__":
             date, model, location_type, pred_variable = f_remaining.split(".")[0].split("_")
 
             gt = pd.read_csv(
-                os.path.join("challenge-data", "evaluation", f'2022-09-15_{location_type}_{pred_variable}.csv'))
+                os.path.join("challenge-data", "evaluation", f'2022-10-02_{location_type}_{pred_variable}.csv'))
 
             pred = pd.read_parquet(f)  # pd.read_csv(f).to_numpy()
             # format has already been validated, we can trust it here.
