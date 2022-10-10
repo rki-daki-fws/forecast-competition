@@ -25,9 +25,13 @@ def evaluate(ground_truth: pd.core.frame.DataFrame, submission: Submission):
     gt = ground_truth
     if isinstance(pred.target[0], str):
         pred.target = pred.target.apply(datetime.datetime.strptime, args=['%Y-%m-%d']).dt.date
+    elif isinstance(pred.target[0], datetime.datetime):
+        pred.target = pred.target.apply(pd.Timestamp.date)
 
     if isinstance(gt.target[0], str):
         gt.target = gt.target.apply(datetime.datetime.strptime, args=['%Y-%m-%d']).dt.date
+    elif isinstance(gt.target[0], datetime.datetime):
+        gt.target = gt.target.apply(pd.Timestamp.date)
     # TODO add more dtype checks and conversions
 
     # select by value, perhaps data is not contiguous
