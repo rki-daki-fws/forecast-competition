@@ -10,6 +10,7 @@ from datetime import date
 from dataclasses import dataclass
 from io import StringIO, BytesIO
 import requests
+import datetime
 
 
 @dataclass
@@ -37,11 +38,15 @@ def check_format(df_gt, submission):
     required_columns = ['target', 'location', 'sample_id', 'value']
     assert all([r in pred.columns.tolist() for r in required_columns])
 
-    # check that target are dates
-    assert isinstance(pred.loc[0, "target"], date)
+    # check that target are dates, otherwise try to convert
+    if isinstance(pred.target[0], str):
+        pred.target = pred.target.apply(datetime.datetime.strptime, args=['%Y-%m-%d']).dt.date
+    elif isinstance(pred.target[0], datetime.datetime):
+        pred.target = pred.target.apply(pd.Timestamp.date)
 
     # check that value is either int or float, depending on variable type
-    assert (pred.dtypes["value"].type is np.float_ or pred.dtypes["value"].type is np.int_)
+    if not isinstance(pred.value[0], np.floating) or not isinstance(pred.value[0], np.integer):
+        pred.value = pred.value.astype(np.float32)  # try to convert, if not possible throws exception
 
     # TODO check that location are present in gt file
 
