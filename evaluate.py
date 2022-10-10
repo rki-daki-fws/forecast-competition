@@ -25,13 +25,18 @@ def evaluate(ground_truth: pd.core.frame.DataFrame, submission: Submission):
     gt = ground_truth
     if isinstance(pred.target[0], str):
         pred.target = pred.target.apply(datetime.datetime.strptime, args=['%Y-%m-%d']).dt.date
+    elif isinstance(pred.target[0], datetime.datetime):
+        pred.target = pred.target.apply(pd.Timestamp.date)
 
     if isinstance(gt.target[0], str):
         gt.target = gt.target.apply(datetime.datetime.strptime, args=['%Y-%m-%d']).dt.date
+    elif isinstance(gt.target[0], datetime.datetime):
+        gt.target = gt.target.apply(pd.Timestamp.date)
     # TODO add more dtype checks and conversions
 
     # select by value, perhaps data is not contiguous
-    date_intersect = set(pred.target).intersection(set(gt.target))
+    start_date, end_date = get_date_range(submission.reference_date)
+    date_intersect = set(pred.target).intersection(set(gt[(start_date <= gt.target) & (gt.target <= end_date)].target))
     location_intersect = set(pred.location).intersection(set(gt.location))
     forecast_len = len(date_intersect)
     num_locations = len(location_intersect)
@@ -50,6 +55,21 @@ def evaluate(ground_truth: pd.core.frame.DataFrame, submission: Submission):
     rmse = np.sqrt(np.nanmean(np.square(merged_df["value_x"] - merged_df["value_y"])))  # deal with nan values in data
 
     return rmse, forecast_len, num_locations
+
+
+def get_date_range(start_date_str, days=28):
+    """
+    Get datetime.date objects of start and end day in 28 day interval.
+    start_date_str: string of start date, i.e. '2022-10-10'
+    return 2tuple of datetime.date
+    """
+    start_date = pd.Timestamp.date(datetime.datetime.strptime(start_date_str, "%Y-%m-%d"))
+
+    dtime = datetime.datetime.combine(start_date, datetime.time())
+    end_date = dtime + datetime.timedelta(days=days - 1)  # first date already counts
+    end_date = pd.Timestamp.date(end_date)
+
+    return start_date, end_date
 
 
 def init_repo_obj(repo_name_fallback):
@@ -125,7 +145,7 @@ if __name__ == "__main__":
             date, model, location_type, pred_variable = f_remaining.split(".")[0].split("_")
 
             gt = pd.read_csv(
-                os.path.join("challenge-data", "evaluation", f'2022-09-15_{location_type}_{pred_variable}.csv'))
+                os.path.join("challenge-data", "evaluation", f'2022-10-02_{location_type}_{pred_variable}.csv'))
 
             pred = pd.read_parquet(f)  # pd.read_csv(f).to_numpy()
             # format has already been validated, we can trust it here.

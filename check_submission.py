@@ -158,7 +158,7 @@ if __name__ == "__main__":
         if matched is None:
             sys.exit(f"Exiting automatic pipeline, submitted file did not adhere to naming convenction: {f.filename}")
         elif matched is not None and \
-                os.path.isfile(f"challenge-data/truth/{matched.groups()[1]}_{ matched.groups()[3]}_{matched.groups()[4]}.csv"):
+                os.path.isfile(f"challenge-data/truth/{matched.groups()[1]}_{ matched.groups()[3]}_{matched.groups()[4]}.parquet"):
             submissions.append(Submission(f.filename, matched.groups()[1], matched.groups()[3], matched.groups()[4],
                                           pd.DataFrame()))
         else:
