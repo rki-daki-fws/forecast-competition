@@ -130,8 +130,10 @@ if __name__ == "__main__":
     # check which submissions were not evaluated yet
     for submission in submission_files:
         _, team, filename = submission.split(os.path.sep)
-        date, model = filename.split("_")[:2]
-        if not len(lb.loc[(lb["team"] == team) & (lb["model"] == model)]):  # expects specific leaderboard columns
+        date, model, location, variable = filename.split("_")
+        variable = variable.split(".")[0]
+        if not len(lb.loc[(lb["team"] == team) & (lb["model"] == model) & (lb["target_date"] == date) &
+                          (lb["location_type"] == location) & (lb["variable"] == variable)]):  # expects specific leaderboard columns
             to_evaluate.append(submission)
     
     if len(to_evaluate):
