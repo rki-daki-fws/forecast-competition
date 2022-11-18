@@ -147,7 +147,7 @@ if __name__ == "__main__":
     files_changed +=[f for f in pr.get_files() if f.status!="added"]
 
     if len(files_changed):
-        # TODO add comment to PR?    
+        # (optional) add comment to PR
         # exit pipeline
         sys.exit("Exiting automatic pipeline, repo files were changed")
         
