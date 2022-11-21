@@ -111,7 +111,55 @@ def update_leaderboard_locally(entries, columns):
     new_lb = pd.DataFrame(entries, columns=columns)
     new_lb.sort_values("score", ascending=True, inplace=True, ignore_index=True)  # sort by score
     new_lb.to_csv("leaderboard.csv", index=False)  # update leaderboard file in repo
-    dfi.export(new_lb.iloc[:10, :], "leaderboard_snapshot.png", table_conversion="matplotlib")
+    #dfi.export(new_lb.iloc[:10, :], "leaderboard_snapshot.png", table_conversion="matplotlib")
+    # aggregate leaderboard
+    scoreboard = aggregate_scoreboard(lb)
+    update_readme_file(scoreboard.to_markdown(index=False, floatfmt=".2f"))
+
+
+def insert_markdown(md_base, md_insert, search_str1, search_str2):
+    start = md_base.find(search_str1) + len(search_str1)
+    end = md_base.find(search_str2)
+    print(start, end)
+    md_base = md_base[:start] + "\n\n" + md_insert + "\n\n" + md_base[end:]
+
+    return md_base
+
+
+def update_scoreboard_md(base_md, scoreboard_md):
+    return insert_markdown(base_md, scoreboard_md, '<div class="start_scoreboard"></div>',
+                           '<div class="end_scoreboard"></div>')
+
+
+def update_readme_file(scoreboard_markdown):
+    readmefile = "README.md"
+    with open(readmefile, "r") as f:
+        readme = f.read()
+
+    readme = update_scoreboard_md(readme, scoreboard_markdown)
+
+    with open("README.md", "w") as fw:
+        fw.write(readme)
+
+
+def aggregate_scoreboard(lb):
+    gr = lb.groupby(["team", "model"])
+    mean = gr.mean().reset_index()
+    std = gr.std().reset_index()
+    count = gr.count().reset_index().drop(["submission_date", "target_date", "location_type", "variable"], axis=1)
+
+    agg = mean
+    agg["score_std"] = std.score
+    agg["forecasts"] = count.score
+
+    agg.sort_values(["forecasts", "score"], ascending=[False, True], inplace=True, ignore_index=True)  # sort by score
+    # round score, std to 2 digits
+    agg.score = agg.score.round(2)
+    agg.score_std = agg.score_std.round(2)
+    agg.rename(columns={"team": "Team", "model": "Model", "score": "Score (mean)", "score_std": "Score (std)",
+                       "forecasts": "#Forecasts"},
+              inplace=True)
+    return agg
 
 
 if __name__ == "__main__":
@@ -168,7 +216,8 @@ if __name__ == "__main__":
 
             # update leaderboard file and snapshot using github API
             update_repo_file(repo, "leaderboard.csv", "submit", "r")
-            update_repo_file(repo, "leaderboard_snapshot.png", "submit", "rb")
+            update_repo_file(repo, "README.md", "submit", "r")
+            #update_repo_file(repo, "leaderboard_snapshot.png", "submit", "rb")
 
             # merge changes to main branch
             # TODO open pull request
