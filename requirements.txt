@@ -4,3 +4,4 @@ PyGithub
 dataframe-image
 pyarrow
 lxml
+tabulate

@@ -113,7 +113,7 @@ def update_leaderboard_locally(entries, columns):
     new_lb.to_csv("leaderboard.csv", index=False)  # update leaderboard file in repo
     #dfi.export(new_lb.iloc[:10, :], "leaderboard_snapshot.png", table_conversion="matplotlib")
     # aggregate leaderboard
-    scoreboard = aggregate_scoreboard(lb)
+    scoreboard = aggregate_scoreboard(new_lb)
     update_readme_file(scoreboard.to_markdown(index=False, floatfmt=".2f"))
 
 
