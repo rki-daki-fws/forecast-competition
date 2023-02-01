@@ -1,0 +1,30 @@
+name: Generate Report
+
+on:
+  # Triggers the workflow on push or pull request events but only for the "main" branch
+  workflow_dispatch:
+
+# A workflow run is made up of one or more jobs that can run sequentially or in parallel
+jobs:
+  # This workflow contains a single job called "build"
+  check_PR:
+    # The type of runner that the job will run on
+    runs-on: ubuntu-latest
+
+    # Steps represent a sequence of tasks that will be executed as part of the job
+    steps:
+      # Checks-out your repository under $GITHUB_WORKSPACE, so your job can access it
+      - uses: actions/checkout@v3
+        with:
+          ref: improve/process
+      - uses: actions/setup-python@v4
+        with:
+          python-version: '3.9'
+          cache: 'pip' # caching pip dependencies
+      - run: pip install -r requirements.txt
+      
+      - name: Execute notebook
+        run: jupyter nbconvert --to html --no-input --output index.html evaluation_report.ipynb
+        env:
+          GH_TOKEN: ${{secrets.GITHUB_TOKEN}}
+     
