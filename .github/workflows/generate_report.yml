@@ -7,7 +7,7 @@ on:
 # A workflow run is made up of one or more jobs that can run sequentially or in parallel
 jobs:
   # This workflow contains a single job called "build"
-  check_PR:
+  generate:
     # The type of runner that the job will run on
     runs-on: ubuntu-latest
 
@@ -24,7 +24,7 @@ jobs:
       - run: pip install -r requirements.txt
       
       - name: Execute notebook
-        run: jupyter nbconvert --to html --no-input --output index.html evaluation_report.ipynb
+        run: jupyter nbconvert --to html --no-input --execute --output index.html evaluation_report.ipynb
         env:
           GH_TOKEN: ${{secrets.GITHUB_TOKEN}}
      
