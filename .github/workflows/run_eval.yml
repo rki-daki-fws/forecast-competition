@@ -25,7 +25,7 @@ jobs:
       
       # evaluate new submissions, update leaderboard
       - name: Evaluate new submissions
-        run: python evaluate.py
+        run: python scripts/evaluate.py
         env:
           GH_TOKEN: ${{secrets.GITHUB_TOKEN}}
         
