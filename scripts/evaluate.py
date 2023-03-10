@@ -1,11 +1,13 @@
 import pandas as pd
+import numpy as np
 import os
 import sys
 from github import Github
 import glob
 from warnings import warn
+import datetime
 from check_submission import Submission
-from scripts import scoring, utils
+import scoring, utils
 
 
 def evaluate(ground_truth: pd.core.frame.DataFrame, submission: Submission):
@@ -162,15 +164,17 @@ if __name__ == "__main__":
     #repo = init_repo_obj('rki-daki-fws/forecast-competition')
 
     # load results
-    resfile = "results.pickle"
+    resfile = "../results.pickle"
     res = utils.load_results(resfile)  # it is a DF now
     before = time.time()
     submissions_dir = "../submissions"
     # get all submission filenames
     submission_files = glob.glob(f"{submissions_dir}{os.path.sep}*{os.path.sep}*.parquet")
-    submission_files = [f for f in submission_files if "RKIsurv3" not in f]
     # naming already validated, can trust it here
-    
+
+    # scratch rows with values not older than n weeks from today (refdate) (there might be delay in reports)
+    res = utils.filter_last_weeks(res, 8)
+
     to_evaluate = []
     # check which submissions were not evaluated yet
     for submission in submission_files:
@@ -192,8 +196,13 @@ if __name__ == "__main__":
             team, f_remaining = f.split(os.path.sep)[1:]
             refdate, model, location_type, pred_variable = f_remaining.split(".")[0].split("_")
 
-            gt = pd.read_csv(  # TODO dynamically get newest file
-                os.path.join("../challenge-data", "evaluation", f'2022-10-02_{location_type}_{pred_variable}.csv'))
+            if utils.smaller_date(refdate, "2022-08-14"):
+                gt = pd.read_csv(os.path.join("../challenge-data",
+                                              "evaluation", f'2022-10-02_{location_type}_{pred_variable}.csv'))
+            else:
+                # we like to get stable results, with delayed case reports being accounted for
+                # so the more recent the better
+                gt = utils.get_opendata(str(np.datetime64("today")))
 
             pred = utils.load_data(f)  # format has already been validated, we can trust it here.
 
@@ -216,22 +225,9 @@ if __name__ == "__main__":
         if len(res_entries) > num_entries_before:
             utils.pickle_results(resfile, [res_columns] + res_entries)
 
+            # now done in workflow
             # update files using github API
-            #update_repo_file(repo, "README.md", "submit", "r")  # TODO possibly obsolete here, once report is generated
             #update_repo_file(repo, resfile, "submit", "rb")
-
-            # merge changes to main branch
-            # TODO open pull request
-            #  merge PR
-            # try:
-            #     base = repo.get_branch("main")
-            #     head = repo.get_branch("submit")
-            #
-            #     merge_to_master = repo.merge("main",
-            #                         head.commit.sha, "Merge new submissions to master")
-            #
-            # except Exception as ex:
-            #     sys.exit(ex)
         else:
             sys.exit("No submissions file could be evaluated. Failing pipeline")
     else:

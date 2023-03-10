@@ -23,12 +23,24 @@ jobs:
         with:
           python-version: '3.8'
           cache: 'pip' # caching pip dependencies
-      - run: pip install -r requirements.txt
+      - run: |
+          day=$(date +"%u")
+          echo "DOWEEK=$((day))" >> $GITHUB_ENV
+
+      - name: Skipping now
+        if: env.DOWEEK == 7  # sunday
+        run: echo "Skipping report now. Will be generated on next scheduled run!"
+
+      - name: Install requirements
+        if: env.DOWEEK != 7
+        run: pip install -r requirements.txt
       
       - name: Execute notebook
+        if: env.DOWEEK != 7
         run: jupyter nbconvert --to html --no-input --execute --output index.html evaluation_report.ipynb
         
       - name: Commit & push changes
+        if: env.DOWEEK != 7
         run: |
           git config --global user.email "${GITHUB_ACTOR}@users.noreply.github.com"
           git config --global user.name "${GITHUB_ACTOR}"
@@ -36,6 +48,7 @@ jobs:
           git commit -m 'update evaluation report'
           git push
       - name: create PR
+        if: env.DOWEEK != 7
         run: |
           PR_NUM="$(gh api \
           --method POST \
@@ -52,6 +65,7 @@ jobs:
           OWNER: ${{ github.repository_owner }}
           REPO: ${{ github.event.repository.name }}
       - name: merge
+        if: env.DOWEEK != 7
         run: |
           gh api \
           --method PUT \
