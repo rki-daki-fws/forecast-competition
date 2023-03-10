@@ -7,6 +7,8 @@ on:
     # https://docs.github.com/en/actions/using-workflows/events-that-trigger-workflows#running-a-workflow-based-on-the-conclusion-of-another-workflow
     types:
       - completed
+ schedule:
+   - cron:  '0 8 * * *'  # runs every day at 8 am
 
 # only after PR was merged
 jobs:
@@ -21,13 +23,30 @@ jobs:
         with:
           python-version: '3.9'
           cache: 'pip' # caching pip dependencies
-      - run: pip install -r requirements.txt
+      - run: |
+          day=$(date +"%u")
+          echo "DOWEEK=$((day))" >> $GITHUB_ENV
+
+      - name: Skipping now
+        if: env.DOWEEK == 7  # sunday
+        run: echo "Thank you for your submission! It will be evaluated on the next scheduled run!"
+
+      - name: Install requirements
+        if: env.DOWEEK != 7
+        run: pip install -r requirements.txt
       
       # evaluate new submissions, update leaderboard
       - name: Evaluate new submissions
+        if: env.DOWEEK != 7
         run: python scripts/evaluate.py
         env:
           GH_TOKEN: ${{secrets.GITHUB_TOKEN}}
-        
-      # TODO: pull request to main?
-      # -> automerge it
+
+      - name: Commit & push changes
+        if: env.DOWEEK != 7
+        run: |
+          git config --global user.email "${GITHUB_ACTOR}@users.noreply.github.com"
+          git config --global user.name "${GITHUB_ACTOR}"
+          git add results.pickle
+          git commit -m 'update non-aggregated results'
+          git push
