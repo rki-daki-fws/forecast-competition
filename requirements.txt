@@ -9,3 +9,6 @@ ipykernel~=6.17.0
 nbconvert~=7.0.0
 jupyter-core~=4.11.1
 jupyter-server~=1.21.0
+matplotlib
+jupyterlab
+pyarrow

@@ -11,6 +11,7 @@ from dataclasses import dataclass
 from io import StringIO, BytesIO
 import requests
 import datetime
+import utils
 
 
 @dataclass
@@ -164,9 +165,8 @@ if __name__ == "__main__":
         matched = file_pattern.match(f.filename)
         if matched is None:
             sys.exit(f"Exiting automatic pipeline, submitted file did not adhere to naming convenction: {f.filename}")
-        elif matched is not None and \
-                os.path.isfile(f"challenge-data/truth/{matched.groups()[1]}_{ matched.groups()[3]}_{matched.groups()[4]}.parquet"):
-            # TODO extend submission to team, model names
+        elif utils.date_is_sunday(matched.groups()[1]) and utils.greater_date(matched.groups()[1], "2021-04-11"):
+
             submissions.append(Submission(f.filename, matched.groups()[1], matched.groups()[3], matched.groups()[4],
                                           pd.DataFrame()))
         else:
