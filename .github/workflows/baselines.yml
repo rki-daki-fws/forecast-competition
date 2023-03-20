@@ -1,10 +1,10 @@
-name: baseline_submissions
+name: Baselines
 
 # Controls when the action will run.
 on:
   workflow_dispatch:
-  schedule:
-    - cron:  '0 14 * * 0'  # runs only at 2 pm on Sundays
+  #schedule:
+  #  - cron:  '0 14 * * 0'  # runs only at 2 pm on Sundays
 
 jobs: 
   baselines:
