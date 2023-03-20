@@ -1,17 +1,11 @@
 name: Baselines
 
-# Controls when the action will run.
 on:
   workflow_dispatch:
-  #schedule:
-  #  - cron:  '0 14 * * 0'  # runs only at 2 pm on Sundays
-
-jobs: 
+  
+jobs:
   baselines:
-    # The type of runner that the job will run on
     runs-on: ubuntu-latest
-
-    # Load repo and install R
     steps:
     - uses: actions/checkout@v3
       with:
@@ -21,13 +15,13 @@ jobs:
       with:
         working-directory: './examples'
 
-    # Run R script
     - name: Run baseline models
       run: Rscript examples/baselines.R
 
     - name: Commit & push changes
-        run: |
-          git config --global user.email "${GITHUB_ACTOR}@users.noreply.github.com"
-          git config --global user.name "${GITHUB_ACTOR}"
-          git add submissions/*
-          git commit -m 'add new baseline submissions' 
+      run: |
+        git config --global user.email "${GITHUB_ACTOR}@users.noreply.github.com"
+        git config --global user.name "${GITHUB_ACTOR}"
+        git add submissions/*
+        git commit -m 'add new baseline submissions'
+    
