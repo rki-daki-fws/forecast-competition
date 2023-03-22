@@ -3,7 +3,7 @@ name: Baselines
 on:
   workflow_dispatch:
   schedule:
-    - cron: '0 14 * * 0' # runs only on Sundays
+    - cron: '43 13 * * 0' # runs only on Sundays
   
 jobs:
   baselines:

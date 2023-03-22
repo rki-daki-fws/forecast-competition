@@ -3,12 +3,10 @@ name: Evaluate submission
 # run on merged pull request or manual start
 on:
  workflow_run:
-    workflows: [Manual eval trigger, PR merge success, Check PullRequest]
+    workflows: [Manual eval trigger, Scheduled eval trigger, PR merge success, Check PullRequest]
     # https://docs.github.com/en/actions/using-workflows/events-that-trigger-workflows#running-a-workflow-based-on-the-conclusion-of-another-workflow
     types:
       - completed
- schedule:
-   - cron:  '0 8 * * *'  # runs every day at 8 am
 
 # only after PR was merged
 jobs:
