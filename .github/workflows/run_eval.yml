@@ -36,7 +36,9 @@ jobs:
       # evaluate new submissions, update leaderboard
       - name: Evaluate new submissions
         if: env.DOWEEK != 7
-        run: python scripts/evaluate.py
+        run: |
+         cd scripts
+         python evaluate.py
         env:
           GH_TOKEN: ${{secrets.GITHUB_TOKEN}}
 
