@@ -178,7 +178,7 @@ if __name__ == "__main__":
     to_evaluate = []
     # check which submissions were not evaluated yet
     for submission in submission_files:
-        _, team, filename = submission.split(os.path.sep)
+        team, filename = submission.split(os.path.sep)[-2:]
         date, model, location, variable = filename.split("_")
         variable = variable.split(".")[0]
         rows = (res["refdate"] == date) & (res["team"] == team) & (res["model"] == model)
@@ -193,7 +193,7 @@ if __name__ == "__main__":
         res_columns = res.columns.values.tolist()
         
         for j, f in enumerate(to_evaluate):
-            team, f_remaining = f.split(os.path.sep)[1:]
+            team, f_remaining = f.split(os.path.sep)[-2:]
             refdate, model, location_type, pred_variable = f_remaining.split(".")[0].split("_")
 
             if utils.smaller_date(refdate, "2022-08-14"):

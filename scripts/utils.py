@@ -180,20 +180,16 @@ def smaller_date(date1: str, date2: str) -> bool:
     return datetime.strptime(date1,  '%Y-%m-%d') < datetime.strptime(date2,  '%Y-%m-%d')
 
 
-def filter_last_weeks(df: pd.DataFrame, n: int=6) -> pd.DataFrame:
+def filter_last_weeks(df: pd.DataFrame, n: int=6, date_col: str="target") -> pd.DataFrame:
     today = np.datetime64('today')
 
-    # Define a dataframe with a "date" column
-    # df = pd.DataFrame({'date': ['2022-01-01', '2022-02-01', '2022-03-01', '2022-04-01'],
-    #                   'value': [1, 2, 3, 4]})
+    if not np.issubdtype(df[date_col].dtype, np.datetime64):
+        df[date_col] = df[date_col].astype(np.datetime64)
 
-    # Convert the "date" column to numpy.datetime64 type
-    df['date'] = df['date'].astype(np.datetime64)
-
-    # Filter the dataframe to include only rows with dates within the last 6 weeks
+    # Filter the dataframe to include only rows with dates within the last n weeks
     six_weeks_ago = today - np.timedelta64(n, 'W')
 
-    return df[df['date'] < six_weeks_ago]
+    return df[df[date_col] < six_weeks_ago]
 
 
 if __name__ == "__main__":
