@@ -178,7 +178,7 @@ if __name__ == "__main__":
     to_evaluate = []
     # check which submissions were not evaluated yet
     for submission in submission_files:
-        _, team, filename = submission.split(os.path.sep)
+        team, filename = submission.split(os.path.sep)[-2:]
         date, model, location, variable = filename.split("_")
         variable = variable.split(".")[0]
         rows = (res["refdate"] == date) & (res["team"] == team) & (res["model"] == model)
