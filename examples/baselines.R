@@ -12,6 +12,8 @@ library(lubridate)
 library(arrow)
 library(parallel)
 library(stringr)
+library(httr)
+library(comprehenr)
 
 # make sure working directory is correct, so relative paths work
 wd <- getwd()
@@ -19,12 +21,33 @@ if(basename(wd) != "examples"){
   setwd(file.path(wd, "examples"))
 }
 
-get_opendata <- function(referance_date){
-  url <- paste("https://github.com/robert-koch-institut/COVID-19_7-Tage-Inzidenz_in_Deutschland/archive/refs/tags/",
-                referance_date, ".zip", sep="")
 
+get_opendata <- function(referance_date){
+  success = FALSE
   temp <- "./tempfile.zip"
-  download.file(url,temp, mode="wb")
+  
+  while(success == FALSE){
+    url <- paste("https://github.com/robert-koch-institut/COVID-19_7-Tage-Inzidenz_in_Deutschland/archive/refs/tags/",
+                  referance_date, ".zip", sep="")
+    
+    res <- GET(
+      url = url,
+      write_disk(temp, overwrite=TRUE))#,
+      #verbose()) # deals with redirects
+    
+    if(res$status_code == 200){
+      success = TRUE
+    }
+    else{
+      #print(h$value())
+      print(res)
+      print(paste("Archive file not available for", referance_date, ".\n Trying previous day."))
+      referance_date = as.Date(referance_date) - days(1)
+    }
+    
+  }
+  
+  #download.file(url,temp, mode="wb", extra="-L")  # doesn't deal with redirects
   to_extract <- paste("COVID-19_7-Tage-Inzidenz_in_Deutschland-", referance_date,
                       "/COVID-19-Faelle_7-Tage-Inzidenz_Landkreise.csv", sep="")
   data <- read_csv(unz(temp, to_extract))
@@ -39,13 +62,18 @@ get_opendata <- function(referance_date){
 }
 
 
-
 make_forecasts <- function(team, forecast_start) {
 
   location_type <- "LK"
 
-  # retrieve openData
-  data <- get_opendata(forecast_start)
+  if(forecast_start >= "2022-10-01"){
+    # retrieve openData
+    data <- get_opendata(forecast_start)    
+  }
+  else{
+    data <- read_csv("../challenge-data/evaluation/2022-10-02_LK_cases.csv") %>%
+      as_tsibble(key = location, index = target)
+  }
 
   # fitting baseline models
   train <- data %>%
@@ -92,6 +120,31 @@ make_forecasts <- function(team, forecast_start) {
     }
   }
 }
+
+
+get_sundays <- function(year){
+  start <- seq(as.Date(paste0(year, "-01-01")), 
+               as.Date(paste0(year, "-01-07")),
+               by = 1)
+  sundays <- seq(start[which(as.numeric(format(start,"%w")) == 0)],
+                 as.Date(paste0(year, "-12-31")), by = 7)
+  # only up to now
+  sundays[sundays <= Sys.Date()]
+}
+
+
+already_predicted <- function(){
+  
+  files <- list.files("../submissions/RKIsurv2")
+  dates <- to_vec(for(f in files) str_split(f,"_")[[1]][1])
+  #unique(dates)
+}
+
+
+#ttwo <- get_sundays("2022")
+#tthree <- get_sundays("2023")
+#predicted <- already_predicted()
+#remaining <- setdiff(as.character(append(ttwo, tthree)), predicted) # x - y
 
 # metadata
 team_name <- "RKIsurv2"
