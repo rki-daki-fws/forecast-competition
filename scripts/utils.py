@@ -109,11 +109,18 @@ def get_opendata(refdate: str) -> pd.DataFrame:
     assert datetime.strptime(refdate, '%Y-%m-%d') >= datetime.strptime(refdate_min, '%Y-%m-%d'),\
         f"refdate should be greater than or equal to {refdate_min}"
 
-    # download data
-    url = f"https://github.com/robert-koch-institut/COVID-19_7-Tage-Inzidenz_in_Deutschland/archive/refs/tags/{refdate}.zip"
-    response = requests.get(url)
-    if response.status_code != 200:
-        raise ValueError("Failed to download the data")
+    success, retries = False, 0
+    while not success or retries == 100:
+        # download data
+        url = f"https://github.com/robert-koch-institut/COVID-19_7-Tage-Inzidenz_in_Deutschland/archive/refs/tags/{refdate}.zip"
+        response = requests.get(url)
+        if response.status_code != 200:
+            print(f"Failed to download data for {refdate}")
+            refdate = str(np.datetime64(refdate) - np.timedelta64(1, "D"))  # try previous day
+            retries += 1
+            # 404: https://codeload.github.com/robert-koch-institut/COVID-19_7-Tage-Inzidenz_in_Deutschland/zip/refs/tags/2022-11-06
+        else:
+            success = True
 
     # save the zip file
     filename = f"{refdate}.zip"
