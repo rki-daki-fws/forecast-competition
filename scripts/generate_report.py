@@ -305,47 +305,34 @@ def figure_wis_composition(results: pd.DataFrame, title: str, min_date: Optional
     return fig
 
 
-def create_figures_baseline_comparison(df: pd.DataFrame, baseline: Optional[str] = "RKIsurv2-arima",
-                                       plot_2022: Optional[bool] = False) -> None:
-    models = []
+def create_figures_baseline_comparison(df: pd.DataFrame, baseline: Optional[str] = "RKIsurv2-arima") -> None:
+    models = df.model.unique().tolist()
     cond_1week_ahead = df.target < df.refdate + np.timedelta64(7, "D")
     cond_4week_ahead = [df.target >= df.refdate + np.timedelta64(21, "D"),
                         df.target < df.refdate + np.timedelta64(28, "D")]
 
-    resw1_21 = df.loc[(cond_1week_ahead) & (df.refdate < np.datetime64("2021-09-01")), ]
-    resw4_21 = df.loc[np.logical_and(*(cond_4week_ahead)) & (df.refdate < np.datetime64("2021-09-01")), ]
+    years = ["2021", "2022", "2023"]
+    arr_year = np.datetime_as_string(df.refdate, "Y")
 
-    xlim_21 = (resw1_21.target.min(), resw1_21.target.max())
-    models += resw1_21.model.unique().tolist() + resw4_21.model.unique().tolist()
+    dfs_year, xlims = [], []
 
-    if plot_2022:
-        resw1_22 = df.loc[(cond_1week_ahead) & (df.refdate >= np.datetime64("2022-01-01")), ]
-        resw4_22 = df.loc[np.logical_and(*(cond_4week_ahead)) & (df.refdate >= np.datetime64("2022-01-01")), ]
+    for i, y in enumerate(years):
+        dfs_year.append((df.loc[(cond_1week_ahead) & (arr_year == y),],  # one-week ahead
+                         df.loc[np.logical_and(*(cond_4week_ahead)) & (arr_year == y),]))  # four-weeks ahead
 
-        xlim_22 = (resw1_22.target.min(), resw1_22.target.max())
-        models += resw1_22.model.unique().tolist() + resw4_22.model.unique().tolist()
+        xlims.append((dfs_year[i][0].target.min(), dfs_year[i][0].target.max()))
 
     for m in set(models):
         if m == baseline:
             continue
 
-        if plot_2022:
-            fig, axes = plt.subplots(2, 2, figsize=(14, 11), sharey="col")
-        else:
-            fig, axes = plt.subplots(2, 1, figsize=(7, 11), sharey="col")
+        fig, axes = plt.subplots(2, 3, figsize=(15, 11), sharey="col")
 
-        axes = axes.T.flatten()
-
-        plot_wis_compare_baseline(resw1_21, baseline, m, axes[0], xlim_21,
-                                  title="2021\nAverage 1-week ahead weighted interval score")
-        plot_wis_compare_baseline(resw4_21, baseline, m, axes[1], xlim_21,
-                                  title="2021\nAverage 4-week ahead weighted interval score")
-
-        if plot_2022:
-            plot_wis_compare_baseline(resw1_22, baseline, m, axes[2], xlim_22,
-                                      title="2022\nAverage 1-week ahead weighted interval score")
-            plot_wis_compare_baseline(resw4_22, baseline, m, axes[3], xlim_22,
-                                      title="2022\nAverage 4-week ahead weighted interval score")
+        for ax, dfy, lim, y in zip(axes.T, dfs_year, xlims, years):
+            plot_wis_compare_baseline(dfy[0], baseline, m, ax[0], lim,
+                                      title=f"{y}\nAverage 1-week ahead weighted interval score")
+            plot_wis_compare_baseline(dfy[1], baseline, m, ax[1], lim,
+                                      title=f"{y}\nAverage 4-week ahead weighted interval score")
 
         plt.legend()
         plt.tight_layout()
