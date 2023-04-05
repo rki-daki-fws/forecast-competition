@@ -374,6 +374,46 @@ def generate_tabbed_content(content: dict) -> str:
     return f'<div class="tabgroup"><div class="tab">{buttons}</div>{tabs}</div>'
 
 
+def plot_coverage_probability(df, coverage_col="within_", temporal_col="refdate", coverage_levels=None):
+    if coverage_levels is None:
+        coverage_levels = [50, 80, 95]
+    else:
+        if not isinstance(coverage_levels, list) or not len(coverage_levels) or not isinstance(coverage_levels[0], int):
+            raise ValueError("'coverage_levels' needs to be list of ints")
+
+    df = visualizations.drop_insufficient_levels(df, "model", 3)
+
+    models = df.model.unique().tolist()
+    n_levels = len(coverage_levels)
+
+    fig, axes = plt.subplots(len(models), n_levels, figsize=(5 * n_levels, 5 * len(models)), sharey=True)
+    colors = plt.rcParams["axes.prop_cycle"]()
+
+    if not isinstance(axes, np.ndarray):  # means there is just one level
+        axes = np.array(axes)[None]  # expand array
+
+    for axis, model in zip(axes, models):
+        rows = df[df.model == model]
+        c = next(colors)["color"]
+
+        for ax, level in zip(axis, coverage_levels):
+            # ax.scatter(rows[temporal_col], rows[f"{coverage_col}{level}"], marker="D")
+            ax.plot(rows[temporal_col], rows[f"{coverage_col}{level}"], marker="D", color=c)
+            ax.plot(rows[temporal_col], [level / 100] * len(rows), linestyle="dashed", color="grey")
+            ax.set_title(f"{level}% PI")
+            ax.tick_params(axis='x', labelrotation=45)
+            ax.set_xlabel("Time")
+
+        axis[0].annotate(model, xy=(0, 0.5), xytext=(-axis[0].yaxis.labelpad - 5, 0),
+                         xycoords=axis[0].yaxis.label, textcoords='offset points',
+                         size='large', ha='right', va='center')
+
+        axis[0].set(ylim=(0, 1), ylabel="Coverage probability")
+
+    fig.tight_layout()
+    plt.savefig("figures/coverage.png")
+
+
 # import IPython.display inside notebook, run display(HTML(code))
 css_tab_navigation = """
 <style>
