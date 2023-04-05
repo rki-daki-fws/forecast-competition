@@ -3,11 +3,11 @@ name: Scheduled eval trigger
 # Controls when the workflow will run
 on:
   schedule:
-    - cron: '39 8 * * *' # every morning
+    - cron: "39 8 * * *" # every morning
 
 jobs:
   trigger:
-  if: github.repository_owner == 'rki-daki-fws'
+    if: github.repository_owner == 'rki-daki-fws'
     runs-on: ubuntu-latest
 
     steps:
