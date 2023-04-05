@@ -168,16 +168,19 @@ def coverage_probability(df, alpha=0.05):
 
 def wis_boxplot(df, hue, var_name):
 
-    fig, axes = plt.subplots(1, 2, figsize=(16, 9))
+    fig, axes = plt.subplots(1, 3, figsize=(16, 9))
 
     df_21 = df[df.refdate < np.datetime64("2022-01-01")]
-    df_22 = df[df.refdate >= np.datetime64("2022-01-01")]
+    df_22 = df[(df.refdate >= np.datetime64("2022-01-01")) & (df.refdate < np.datetime64("2023-01-01"))]
+    df_23 = df[df.refdate >= np.datetime64("2023-01-01")]
 
     levels = set(df_21[hue]).union(set(df_22[hue]))
-    colors = sns.color_palette(n_colors=len(levels))
+    levels = sorted(list(levels), reverse=True)
+    colors = sns.color_palette("Set1", n_colors=len(levels))
     palette = {level: color for level, color in zip(levels, colors)}
     visualizations.create_boxplot(df_21, hue, var_name, "Year 2021", axes[0], "WIS", palette, drop_columns=["refdate"])
     visualizations.create_boxplot(df_22, hue, var_name, "Year 2022", axes[1], "WIS", palette, drop_columns=["refdate"])
+    visualizations.create_boxplot(df_23, hue, var_name, "Year 2023", axes[2], "WIS", palette, drop_columns=["refdate"])
 
 
 def corresponding_boxplot_table(df, score="wis"):
