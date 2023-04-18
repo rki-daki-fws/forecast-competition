@@ -487,7 +487,7 @@ function openTab(evt) {
 if __name__ == "__main__":
     import time
 
-    results = utils.load_results("../results.pickle")
+    results = utils.load_results("../results/res.pickle")
     results["model"] = results["team"] + "-" + results["model"]
     results.drop(["team"], axis=1, inplace=True)
     before = time.time()
@@ -524,9 +524,5 @@ if __name__ == "__main__":
     plt.show()
     """
 
-    # PROBLEM: this looks completely garbage for 22 right now, as forecast periods are not adjacent.
-    # huge gaps! probably should upload more truth data, make forecasts for all dates.
-    # in the meantime, it is probably best not to display this/make it optional
-
-    # WIS over time  # TODO this was intended to be weekly values, not daily
-    create_figures_baseline_comparison(results, baseline="RKIsurv2-arima", plot_2022=True)
+    # WIS over time
+    create_figures_baseline_comparison(results, baseline="RKIsurv2-arima")

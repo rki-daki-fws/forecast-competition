@@ -16,7 +16,6 @@ jobs:
     steps:
       - uses: actions/checkout@v3
         with:
-          lfs: true
           ref: submit
       - uses: actions/setup-python@v4
         with:
@@ -48,6 +47,6 @@ jobs:
         run: |
           git config --global user.email "${GITHUB_ACTOR}@users.noreply.github.com"
           git config --global user.name "${GITHUB_ACTOR}"
-          git add results.pickle
+          git add ./results/*
           git commit -m 'update non-aggregated results'
           git push
