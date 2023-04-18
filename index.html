@@ -36,6 +36,7 @@ span.linenos.special { color: #000000; background-color: #ffffc0; padding-left: 
 .highlight .m { color: var(--jp-mirror-editor-number-color) } /* Literal.Number */
 .highlight .s { color: var(--jp-mirror-editor-string-color) } /* Literal.String */
 .highlight .ow { color: var(--jp-mirror-editor-operator-color); font-weight: bold } /* Operator.Word */
+.highlight .pm { color: var(--jp-mirror-editor-punctuation-color) } /* Punctuation.Marker */
 .highlight .w { color: var(--jp-mirror-editor-variable-color) } /* Text.Whitespace */
 .highlight .mb { color: var(--jp-mirror-editor-number-color) } /* Literal.Number.Bin */
 .highlight .mf { color: var(--jp-mirror-editor-number-color) } /* Literal.Number.Float */
@@ -14464,10 +14465,6 @@ a.anchor-link {
   display: none;
 }
 
-.highlight  {
-  margin: 0.4em;
-}
-
 /* Input area styling */
 .jp-InputArea {
   overflow: hidden;
@@ -14477,9 +14474,26 @@ a.anchor-link {
   overflow: hidden;
 }
 
-.CodeMirror pre {
+.CodeMirror.cm-s-jupyter .highlight pre {
+/* weird, but --jp-code-padding defined to be 5px but 4px horizontal padding is hardcoded for pre.CodeMirror-line */
+  padding: var(--jp-code-padding) 4px;
   margin: 0;
-  padding: 0;
+
+  font-family: inherit;
+  font-size: inherit;
+  line-height: inherit;
+  color: inherit;
+
+}
+
+.jp-OutputArea-output pre {
+  line-height: inherit;
+  font-family: inherit;
+}
+
+.jp-RenderedText pre {
+  color: var(--jp-content-font-color1);
+  font-size: var(--jp-code-font-size);
 }
 
 /* Using table instead of flexbox so that we can use break-inside property */
@@ -14584,10 +14598,9 @@ body[data-format='mobile'] .jp-OutputArea-child .jp-OutputArea-output {
 <p><img src="figures/daki-fws.png"
      alt="DAKI-FWS"
      style="float: right; margin-right: 50px; margin-bottom:20px; height:80px; width:auto;"/></p>
-<p><h1>Forecasting competition evaluation report</h1>
-&lt;/br&gt;
-&lt;/br&gt;</p>
-<p>The evaluation of forecasting models is an essential step in the development of our early warning system. Here we will assess the overall performance as well as perfomance over time and regions, this can help identify situations in which models may perform in an undesired fashion. Further we will look whether under/overprediction or the calbration with respect to uncertainty oft he prediction are the main drivers of performance loss. This again is meant to help improve the model by identifying potential problems. Furthermore, the models will be assessed according to how well they specifiy the uncertainty of their predictions. Bein gable to correctly specify the uncertainty oft he forecast is an essential requirement for infectious disease forecasts for their use in ean early warning system.</p>
+<h1>Forecasting competition evaluation report</h1>
+<p style="margin-top:70px">The evaluation of forecasting models is an essential step in the development of our early warning system. Here we will assess the overall performance as well as perfomance over time and regions, this can help identify situations in which models may perform in an undesired fashion. Further we will look whether under/overprediction or the calbration with respect to uncertainty oft he prediction are the main drivers of performance loss. This again is meant to help improve the model by identifying potential problems. Furthermore, the models will be assessed according to how well they specifiy the uncertainty of their predictions. Bein gable to correctly specify the uncertainty oft he forecast is an essential requirement for infectious disease forecasts for their use in ean early warning system.</p>
+
 </div>
 </div>
 </div>
@@ -14598,9 +14611,7 @@ body[data-format='mobile'] .jp-OutputArea-child .jp-OutputArea-output {
 </div>
 
 <div class="jp-OutputArea jp-Cell-outputArea">
-
 <div class="jp-OutputArea-child">
-
 
 <div class="jp-RenderedHTMLCommon jp-RenderedHTML jp-OutputArea-output " data-mime-type="text/html">
 
@@ -14630,9 +14641,7 @@ function openTab(evt) {
 </div>
 
 </div>
-
 <div class="jp-OutputArea-child">
-
 
 <div class="jp-RenderedHTMLCommon jp-RenderedHTML jp-OutputArea-output " data-mime-type="text/html">
 
@@ -14700,7 +14709,7 @@ body {font-family: Arial;}
 </div>
 <div class="jp-InputArea jp-Cell-inputArea"><div class="jp-RenderedHTMLCommon jp-RenderedMarkdown jp-MarkdownOutput " data-mime-type="text/markdown">
 <h1 id="Performance-Evaluation">Performance Evaluation<a class="anchor-link" href="#Performance-Evaluation">&#182;</a></h1><p>The performance of all forecasts will be evaluated by the (relative) weighted interval score WIS (link to a definition) which is a proper scoring rule that considers not only the point estimate but the entire predictive distribution. A smaller WIS indicates a better performance. The WIS allows to distinguish between performance loss due to overprediction, underprediction and sharpness.
- <img src="./figures/boxplot.png" alt="Boxplots of weighted interval score by model and forecasting period for the years 2021 - 23"></p>
+ <img src="./figures/boxplot.png" alt="Boxplots of weighted interval score by model and forecasting period for the years 2021 - 23" /></p>
 <p><em>Fig 1: Comparison of forecasting model (submitted and baseline) performance in terms of (relative) WIS, for the 4 different forecast horizons and the overall performance. Lower WIS indicates better performance. Boxplots are summaries of WIS scores for all counties and weeks for which a forecast was submitted. Models may differ in weeks and counties for which they have provied forecasts. Forecasts from baseline models exist for all counties and dates.</em></p>
 
 </div>
@@ -14724,9 +14733,7 @@ body {font-family: Arial;}
 </div>
 
 <div class="jp-OutputArea jp-Cell-outputArea">
-
-<div class="jp-OutputArea-child">
-
+<div class="jp-OutputArea-child jp-OutputArea-executeResult">
 
 <div class="jp-RenderedHTMLCommon jp-RenderedHTML jp-OutputArea-output jp-OutputArea-executeResult" data-mime-type="text/html">
 <div>
@@ -14848,9 +14855,7 @@ body {font-family: Arial;}
 </div>
 
 <div class="jp-OutputArea jp-Cell-outputArea">
-
-<div class="jp-OutputArea-child">
-
+<div class="jp-OutputArea-child jp-OutputArea-executeResult">
 
 <div class="jp-RenderedHTMLCommon jp-RenderedHTML jp-OutputArea-output jp-OutputArea-executeResult" data-mime-type="text/html">
 <div>
@@ -14981,9 +14986,7 @@ body {font-family: Arial;}
 </div>
 
 <div class="jp-OutputArea jp-Cell-outputArea">
-
-<div class="jp-OutputArea-child">
-
+<div class="jp-OutputArea-child jp-OutputArea-executeResult">
 
 <div class="jp-RenderedHTMLCommon jp-RenderedHTML jp-OutputArea-output jp-OutputArea-executeResult" data-mime-type="text/html">
 <div>
@@ -15016,38 +15019,38 @@ body {font-family: Arial;}
     <tr>
       <th>0</th>
       <td>RKIsurv2-arima</td>
-      <td>35.75 (29.17 - 42.33)</td>
-      <td>36.88 (28.78 - 44.98)</td>
-      <td>39.2 (32.57 - 45.84)</td>
-      <td>39.9 (35.4 - 44.4)</td>
-      <td>38.58 (35.35 - 41.81)</td>
+      <td>36.36 (30.34 - 42.38)</td>
+      <td>37.43 (29.78 - 45.08)</td>
+      <td>39.55 (33.28 - 45.83)</td>
+      <td>40.28 (36.22 - 44.34)</td>
+      <td>38.68 (35.59 - 41.78)</td>
     </tr>
     <tr>
       <th>1</th>
       <td>RKIsurv2-etsAAA</td>
-      <td>41.42 (32.97 - 49.87)</td>
-      <td>40.4 (30.91 - 49.88)</td>
-      <td>46.13 (36.49 - 55.78)</td>
-      <td>47.59 (41.16 - 54.01)</td>
-      <td>48.29 (44.74 - 51.84)</td>
+      <td>42.09 (34.23 - 49.96)</td>
+      <td>40.97 (31.93 - 50.01)</td>
+      <td>46.49 (37.19 - 55.78)</td>
+      <td>47.88 (41.82 - 53.94)</td>
+      <td>47.98 (44.07 - 51.89)</td>
     </tr>
     <tr>
       <th>2</th>
       <td>RKIsurv2-etsAAN</td>
-      <td>46.5 (37.02 - 55.97)</td>
-      <td>46.57 (35.77 - 57.36)</td>
-      <td>50.49 (40.45 - 60.53)</td>
-      <td>52.66 (45.4 - 59.92)</td>
-      <td>54.25 (50.14 - 58.37)</td>
+      <td>47.37 (38.63 - 56.1)</td>
+      <td>47.36 (37.18 - 57.55)</td>
+      <td>51.03 (41.54 - 60.51)</td>
+      <td>53.05 (46.26 - 59.83)</td>
+      <td>54.3 (50.24 - 58.36)</td>
     </tr>
     <tr>
       <th>3</th>
       <td>RKIsurv2-etsANN</td>
-      <td>29.93 (24.05 - 35.8)</td>
-      <td>32.05 (23.86 - 40.24)</td>
-      <td>34.48 (27.09 - 41.86)</td>
-      <td>31.96 (27.67 - 36.25)</td>
-      <td>30.45 (26.26 - 34.65)</td>
+      <td>30.32 (24.77 - 35.87)</td>
+      <td>32.39 (24.44 - 40.34)</td>
+      <td>34.73 (27.56 - 41.89)</td>
+      <td>32.24 (28.27 - 36.22)</td>
+      <td>30.57 (26.5 - 34.64)</td>
     </tr>
   </tbody>
 </table>
@@ -15080,12 +15083,10 @@ body {font-family: Arial;}
 </div>
 
 <div class="jp-OutputArea jp-Cell-outputArea">
-
 <div class="jp-OutputArea-child">
 
-
 <div class="jp-RenderedHTMLCommon jp-RenderedHTML jp-OutputArea-output " data-mime-type="text/html">
-<div class="tabgroup"><div class="tab"><button class="tablinks active" onclick="openTab(event)">HHI-ConnstantSpreadTest</button><button class="tablinks" onclick="openTab(event)">HPI-baseMpnnLstm</button><button class="tablinks" onclick="openTab(event)">HPI-decomp1</button><button class="tablinks" onclick="openTab(event)">RKIsurv2-etsAAA</button><button class="tablinks" onclick="openTab(event)">RKIsurv2-etsAAN</button><button class="tablinks" onclick="openTab(event)">RKIsurv2-etsANN</button></div><div id="HHI-ConnstantSpreadTest" class="tabcontent" style="display:block;"><img src="./figures\baseline_HHI-ConnstantSpreadTest.png" alt="weighted interval score comparison HHI-ConnstantSpreadTest" /></div><div id="HPI-baseMpnnLstm" class="tabcontent"><img src="./figures\baseline_HPI-baseMpnnLstm.png" alt="weighted interval score comparison HPI-baseMpnnLstm" /></div><div id="HPI-decomp1" class="tabcontent"><img src="./figures\baseline_HPI-decomp1.png" alt="weighted interval score comparison HPI-decomp1" /></div><div id="RKIsurv2-etsAAA" class="tabcontent"><img src="./figures\baseline_RKIsurv2-etsAAA.png" alt="weighted interval score comparison RKIsurv2-etsAAA" /></div><div id="RKIsurv2-etsAAN" class="tabcontent"><img src="./figures\baseline_RKIsurv2-etsAAN.png" alt="weighted interval score comparison RKIsurv2-etsAAN" /></div><div id="RKIsurv2-etsANN" class="tabcontent"><img src="./figures\baseline_RKIsurv2-etsANN.png" alt="weighted interval score comparison RKIsurv2-etsANN" /></div></div>
+<div class="tabgroup"><div class="tab"><button class="tablinks active" onclick="openTab(event)">RKIsurv2-etsAAA</button><button class="tablinks" onclick="openTab(event)">RKIsurv2-etsANN</button><button class="tablinks" onclick="openTab(event)">HHI-ConnstantSpreadTest</button><button class="tablinks" onclick="openTab(event)">HPI-decomp1</button><button class="tablinks" onclick="openTab(event)">HPI-baseMpnnLstm</button><button class="tablinks" onclick="openTab(event)">RKIsurv2-etsAAN</button></div><div id="RKIsurv2-etsAAA" class="tabcontent" style="display:block;"><img src="./figures/baseline_RKIsurv2-etsAAA.png" alt="weighted interval score comparison RKIsurv2-etsAAA" /></div><div id="RKIsurv2-etsANN" class="tabcontent"><img src="./figures/baseline_RKIsurv2-etsANN.png" alt="weighted interval score comparison RKIsurv2-etsANN" /></div><div id="HHI-ConnstantSpreadTest" class="tabcontent"><img src="./figures/baseline_HHI-ConnstantSpreadTest.png" alt="weighted interval score comparison HHI-ConnstantSpreadTest" /></div><div id="HPI-decomp1" class="tabcontent"><img src="./figures/baseline_HPI-decomp1.png" alt="weighted interval score comparison HPI-decomp1" /></div><div id="HPI-baseMpnnLstm" class="tabcontent"><img src="./figures/baseline_HPI-baseMpnnLstm.png" alt="weighted interval score comparison HPI-baseMpnnLstm" /></div><div id="RKIsurv2-etsAAN" class="tabcontent"><img src="./figures/baseline_RKIsurv2-etsAAN.png" alt="weighted interval score comparison RKIsurv2-etsAAN" /></div></div>
 </div>
 
 </div>
@@ -15128,9 +15129,7 @@ body {font-family: Arial;}
 </div>
 
 <div class="jp-OutputArea jp-Cell-outputArea">
-
 <div class="jp-OutputArea-child">
-
 
 <div class="jp-RenderedHTMLCommon jp-RenderedHTML jp-OutputArea-output " data-mime-type="text/html">
 <div class="tabgroup"><div class="tab"><button class="tablinks active" onclick="openTab(event)">2023</button><button class="tablinks" onclick="openTab(event)">2022</button><button class="tablinks" onclick="openTab(event)">2021</button></div><div id="2023" class="tabcontent" style="display:block;"><img src="figures/wis_composition_23.png" alt="Weighted interval score composition 2023"/></div><div id="2022" class="tabcontent"><img src="figures/wis_composition_22.png" alt="Weighted interval score composition 2022"/></div><div id="2021" class="tabcontent"><img src="figures/wis_composition_21.png" alt="Weighted interval score composition 2021"/></div></div>
@@ -15171,9 +15170,7 @@ body {font-family: Arial;}
 </div>
 
 <div class="jp-OutputArea jp-Cell-outputArea">
-
-<div class="jp-OutputArea-child">
-
+<div class="jp-OutputArea-child jp-OutputArea-executeResult">
 
 <div class="jp-RenderedHTMLCommon jp-RenderedHTML jp-OutputArea-output jp-OutputArea-executeResult" data-mime-type="text/html">
 <div>
@@ -15209,8 +15206,8 @@ body {font-family: Arial;}
       <td>82</td>
       <td>1.000000</td>
       <td>1.000000</td>
-      <td>0.514223</td>
-      <td>0.786724</td>
+      <td>0.516938</td>
+      <td>0.787921</td>
     </tr>
     <tr>
       <th>1</th>
@@ -15270,28 +15267,28 @@ body {font-family: Arial;}
       <th>7</th>
       <td>RKIsurv2-etsAAA</td>
       <td>82</td>
-      <td>1.206693</td>
-      <td>1.184956</td>
-      <td>0.518597</td>
-      <td>0.786193</td>
+      <td>1.206515</td>
+      <td>1.185014</td>
+      <td>0.521257</td>
+      <td>0.787393</td>
     </tr>
     <tr>
       <th>8</th>
       <td>RKIsurv2-etsAAN</td>
       <td>82</td>
-      <td>1.279205</td>
-      <td>1.284569</td>
-      <td>0.532963</td>
-      <td>0.792829</td>
+      <td>1.280892</td>
+      <td>1.286786</td>
+      <td>0.535531</td>
+      <td>0.793992</td>
     </tr>
     <tr>
       <th>9</th>
       <td>RKIsurv2-etsANN</td>
       <td>82</td>
-      <td>0.914453</td>
-      <td>0.819400</td>
-      <td>0.452903</td>
-      <td>0.712868</td>
+      <td>0.911797</td>
+      <td>0.815771</td>
+      <td>0.455962</td>
+      <td>0.714480</td>
     </tr>
   </tbody>
 </table>
@@ -15323,7 +15320,7 @@ body {font-family: Arial;}
 <div class="jp-Collapser jp-InputCollapser jp-Cell-inputCollapser">
 </div>
 <div class="jp-InputArea jp-Cell-inputArea"><div class="jp-RenderedHTMLCommon jp-RenderedMarkdown jp-MarkdownOutput " data-mime-type="text/markdown">
-<p><img src="./figures/regional_heatmap.png" alt="Heatmap of relative WIS over regions and models"></p>
+<p><img src="./figures/regional_heatmap.png" alt="Heatmap of relative WIS over regions and models" /></p>
 
 </div>
 </div>
@@ -15346,7 +15343,7 @@ body {font-family: Arial;}
 <div class="jp-Collapser jp-InputCollapser jp-Cell-inputCollapser">
 </div>
 <div class="jp-InputArea jp-Cell-inputArea"><div class="jp-RenderedHTMLCommon jp-RenderedMarkdown jp-MarkdownOutput " data-mime-type="text/markdown">
-<p><img src="./figures/coverage.png" alt="Coverage probabilities per model"></p>
+<p><img src="./figures/coverage.png" alt="Coverage probabilities per model" /></p>
 
 </div>
 </div>
