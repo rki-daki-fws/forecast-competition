@@ -231,7 +231,7 @@ def cutoff_to_slices(df, cutoffs):
     slices = []
     for i in range(n):
         slice_start, slice_end = int(df.shape[0] * cutoffs[i]), int(df.shape[0] * cutoffs[i+1])
-        print(slice_start, slice_end)
+        # print(slice_start, slice_end)
         slices.append(df.iloc[slice_start:slice_end, :])
 
     return slices

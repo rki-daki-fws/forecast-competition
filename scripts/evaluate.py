@@ -223,7 +223,7 @@ if __name__ == "__main__":
             res_entries += new_entries
 
         if len(res_entries) > num_entries_before:
-            utils.df_to_split_files(pd.DataFrame(res_entries, columns=[res_columns]), resfile)
+            utils.df_to_split_files(pd.DataFrame(res_entries, columns=res_columns), resfile)
 
             # now done in workflow
             # update files using github API
