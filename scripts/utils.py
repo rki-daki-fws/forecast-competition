@@ -7,6 +7,10 @@ import os
 import zipfile
 from datetime import datetime
 import shutil
+import re
+import glob
+from typing import Tuple
+from math import ceil
 
 
 def load_data(fpath):
@@ -29,11 +33,10 @@ def series2date(series):
     return series
 
 
-def load_results(filepath):
+def load_results_file(filepath):
     """
     Loads pickled results as DataFrame, converts date columns
     Expects columns [refdate, team, model, target, metric_1,... metric_n]
-    # TODO why not also add location_type and variable (just in case) [it'll be a bit bloated but who cares]
     filepath: str, path to file
     """
     try:
@@ -50,6 +53,17 @@ def load_results(filepath):
         df.refdate = series2date(df.refdate)
 
     return df
+
+
+def load_results(fpath) -> pd.DataFrame:
+    dirpath, basename, ending = separate_path(fpath)
+    print(dirpath, basename, ending)
+    files = glob.glob(f"{dirpath}{basename}*{ending}")
+    print(files)
+    dfs = []
+    for f in files:
+        dfs.append(load_results_file(f))
+    return pd.concat(dfs)
 
 
 def pickle_results(filepath, obj):
@@ -187,21 +201,84 @@ def smaller_date(date1: str, date2: str) -> bool:
     return datetime.strptime(date1,  '%Y-%m-%d') < datetime.strptime(date2,  '%Y-%m-%d')
 
 
-def filter_last_weeks(df: pd.DataFrame, n: int=6, date_col: str="target") -> pd.DataFrame:
+def filter_last_weeks(df: pd.DataFrame, n: int = 6, date_col: str = "refdate") -> pd.DataFrame:
     today = np.datetime64('today')
 
     if not np.issubdtype(df[date_col].dtype, np.datetime64):
         df[date_col] = df[date_col].astype(np.datetime64)
 
     # Filter the dataframe to include only rows with dates within the last n weeks
-    six_weeks_ago = today - np.timedelta64(n, 'W')
+    n_weeks_ago = today - np.timedelta64(n, 'W')
 
-    return df[df[date_col] < six_weeks_ago]
+    return df[df[date_col] < n_weeks_ago]
+
+
+def filesize_mb(filepath):
+    fstats = os.stat(filepath)  # os.path.getsize(path)
+    return fstats.st_size / (1024 * 1024)
+
+
+def get_cutoffs(asize, msize):
+    times = ceil(asize / msize)
+    return [(t * msize) / asize for t in range(times)]
+
+
+def cutoff_to_slices(df, cutoffs):
+    n = len(cutoffs)
+    cutoffs.append(1)  # guarantees that the last row index is always accounted for
+    slices = []
+    for i in range(n):
+        slice_start, slice_end = int(df.shape[0] * cutoffs[i]), int(df.shape[0] * cutoffs[i+1])
+        print(slice_start, slice_end)
+        slices.append(df.iloc[slice_start:slice_end, :])
+
+    return slices
+
+
+def df_to_split_files(df, save_path, max_size_mb=95):
+
+    path, basename, ending = separate_path(save_path)
+
+    # let's try saving file first, because we don't know compression rate
+    first_file = f"{path}{basename}{1}{ending}"
+    pickle_results(first_file, df)
+    full_size = filesize_mb(first_file)
+    if full_size <= max_size_mb:
+        return
+
+    cutoffs = get_cutoffs(full_size, max_size_mb)
+    slices = cutoff_to_slices(df, cutoffs)
+
+    for i, s in enumerate(slices):
+        pickle_results(f"{path}{basename}{i+1}{ending}", s)
+
+
+def separate_path(fpath: str) -> Tuple[str, str, str]:
+    """ Separates file path into directory path, file name (without trailing number) and file extension """
+    # pattern = r"^(.*/)?([^.]+)(\.[^./]+)$"  # will match any file name
+    pattern = r"^(.*/)?([A-Za-z_-]+)(?:[0-9]*)(\.[^./]+)$"  # will disregard trailing numbers in file name
+    match = re.match(pattern, fpath)
+
+    if not match:
+        raise ValueError(f"the specified file path {fpath} does not meet the assumptions")
+
+    directory_path = match.group(1)
+    file_name = match.group(2)
+    file_extension = match.group(3)
+
+    if directory_path is None:
+        directory_path = ""
+
+    return directory_path, file_name, file_extension
 
 
 if __name__ == "__main__":
 
-    df = get_opendata("2022-09-30")
-    print(df)
+    #df = get_opendata("2022-09-30")
+    #print(df)
+    filepath = "../results/res.pickle"
+    res = load_results(filepath)
+    print(res.head())
 
-
+    print(res.shape)
+    df_to_split_files(res, filepath)

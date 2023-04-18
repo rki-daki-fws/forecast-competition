@@ -164,7 +164,7 @@ if __name__ == "__main__":
     #repo = init_repo_obj('rki-daki-fws/forecast-competition')
 
     # load results
-    resfile = "../results.pickle"
+    resfile = "../results/res.pickle"
     res = utils.load_results(resfile)  # it is a DF now
     before = time.time()
     submissions_dir = "../submissions"
@@ -173,7 +173,7 @@ if __name__ == "__main__":
     # naming already validated, can trust it here
 
     # scratch rows with values not older than n weeks from today (refdate) (there might be delay in reports)
-    res = utils.filter_last_weeks(res, 8)
+    res = utils.filter_last_weeks(res, 10)
 
     to_evaluate = []
     # check which submissions were not evaluated yet
@@ -223,7 +223,7 @@ if __name__ == "__main__":
             res_entries += new_entries
 
         if len(res_entries) > num_entries_before:
-            utils.pickle_results(resfile, [res_columns] + res_entries)
+            utils.df_to_split_files(resfile, pd.DataFrame(res_entries, columns=[res_columns]))
 
             # now done in workflow
             # update files using github API

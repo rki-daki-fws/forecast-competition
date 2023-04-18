@@ -1,45 +1,42 @@
 name: Generate Report
 
 on:
- workflow_run:
+  workflow_run:
     workflows: [Manual report trigger, Evaluate submission]
     # https://docs.github.com/en/actions/using-workflows/events-that-trigger-workflows#running-a-workflow-based-on-the-conclusion-of-another-workflow
     types:
       - completed
 
-# A workflow run is made up of one or more jobs that can run sequentially or in parallel
 jobs:
   generate:
     # The type of runner that the job will run on
     runs-on: ubuntu-latest
     if: ${{ github.event.workflow_run.conclusion == 'success' }}
-    # Steps represent a sequence of tasks that will be executed as part of the job
     steps:
-      # Checks-out your repository under $GITHUB_WORKSPACE, so your job can access it
+      # Checks-out your repository, so your job can access it
       - uses: actions/checkout@v3
         with:
-          lfs: true
           ref: submit
       - uses: actions/setup-python@v4
         with:
-          python-version: '3.8'
-          cache: 'pip' # caching pip dependencies
+          python-version: "3.8"
+          cache: "pip" # caching pip dependencies
       - run: |
           day=$(date +"%u")
           echo "DOWEEK=$((day))" >> $GITHUB_ENV
 
       - name: Skipping now
-        if: env.DOWEEK == 7  # sunday
+        if: env.DOWEEK == 7 # sunday
         run: echo "Skipping report now. Will be generated on next scheduled run!"
 
       - name: Install requirements
         if: env.DOWEEK != 7
         run: pip install -r requirements.txt
-      
+
       - name: Execute notebook
         if: env.DOWEEK != 7
         run: jupyter nbconvert --to html --no-input --execute --output index.html evaluation_report.ipynb
-        
+
       - name: Commit & push changes
         if: env.DOWEEK != 7
         run: |
@@ -73,9 +70,8 @@ jobs:
           -H "Accept: application/vnd.github+json" \
           /repos/$OWNER/$REPO/pulls/${{env.PR_TO_MERGE}}/merge \
           -f commit_title='Merge new report' \
-          -f commit_message='Automatically merge pull request from report pipeline' 
+          -f commit_message='Automatically merge pull request from report pipeline'
         env:
           GITHUB_TOKEN: ${{secrets.GITHUB_TOKEN}}
           OWNER: ${{ github.repository_owner }}
           REPO: ${{ github.event.repository.name }}
-     
