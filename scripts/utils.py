@@ -57,13 +57,15 @@ def load_results_file(filepath):
 
 def load_results(fpath) -> pd.DataFrame:
     dirpath, basename, ending = separate_path(fpath)
-    print(dirpath, basename, ending)
     files = glob.glob(f"{dirpath}{basename}*{ending}")
-    print(files)
     dfs = []
     for f in files:
         dfs.append(load_results_file(f))
-    return pd.concat(dfs)
+
+    output = pd.concat(dfs)
+    if isinstance(output.columns, pd.core.indexes.multi.MultiIndex):
+        output.columns = output.columns.get_level_values(0)
+    return output
 
 
 def pickle_results(filepath, obj):
