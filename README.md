@@ -7,7 +7,7 @@ This competition is about forecasting the development of the COVID19 pandemic in
 We invite all participants to upload their forecast data until **October 9th 2022**.
 The submissions will first be automatically evaluated by a simple metric of fit (RSME) and the results will be displayed in a public leaderboard.
 
-After all participants submitted their forecasts, we will analyse the submissions more in-depth with more advanced metrics.
+After all participants submitted their forecasts, we will analyze the submissions more in-depth with more advanced metrics.
 We thank you all for participating!
 
 ## Data for training and evaluation
