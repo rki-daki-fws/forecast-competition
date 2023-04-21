@@ -14599,7 +14599,7 @@ body[data-format='mobile'] .jp-OutputArea-child .jp-OutputArea-output {
      alt="DAKI-FWS"
      style="float: right; margin-right: 50px; margin-bottom:20px; height:80px; width:auto;"/></p>
 <h1>Forecasting competition evaluation report</h1>
-<p style="margin-top:70px">The evaluation of forecasting models is an essential step in the development of our early warning system. Here we will assess the overall performance as well as perfomance over time and regions, this can help identify situations in which models may perform in an undesired fashion. Further we will look whether under/overprediction or the calbration with respect to uncertainty oft he prediction are the main drivers of performance loss. This again is meant to help improve the model by identifying potential problems. Furthermore, the models will be assessed according to how well they specifiy the uncertainty of their predictions. Bein gable to correctly specify the uncertainty oft he forecast is an essential requirement for infectious disease forecasts for their use in ean early warning system.</p>
+<p style="margin-top:70px">The evaluation of forecasting models is an essential step in the development of our early warning system. Here, we will assess the overall performance as well as performance over time and regions, which can help identify situations in which models may perform in an undesired fashion. Further, we will look whether under-, over-prediction, or the calibration with respect to uncertainty of the prediction are the main drivers of performance loss. This again is meant to help improve the model by identifying potential problems. Furthermore, the models will be assessed according to how well they specify the uncertainty of their predictions. Being able to correctly specify the uncertainty of the forecast is an essential requirement for infectious disease forecasts for the use in an early warning system.</p>
 
 </div>
 </div>
@@ -14708,9 +14708,9 @@ body {font-family: Arial;}
 <div class="jp-Collapser jp-InputCollapser jp-Cell-inputCollapser">
 </div>
 <div class="jp-InputArea jp-Cell-inputArea"><div class="jp-RenderedHTMLCommon jp-RenderedMarkdown jp-MarkdownOutput " data-mime-type="text/markdown">
-<h1 id="Performance-Evaluation">Performance Evaluation<a class="anchor-link" href="#Performance-Evaluation">&#182;</a></h1><p>The performance of all forecasts will be evaluated by the (relative) weighted interval score WIS (link to a definition) which is a proper scoring rule that considers not only the point estimate but the entire predictive distribution. A smaller WIS indicates a better performance. The WIS allows to distinguish between performance loss due to overprediction, underprediction and sharpness.
+<h1 id="Performance-Evaluation">Performance Evaluation<a class="anchor-link" href="#Performance-Evaluation">&#182;</a></h1><p>The performance of all forecasts will be evaluated by the (relative) weighted interval score <a href="https://cran.r-project.org/web/packages/scoringutils/vignettes/metric-details.html">WIS</a> which is a proper scoring rule that considers not only the point estimate but the entire predictive distribution. A smaller WIS indicates a better performance. The WIS allows to distinguish between performance loss due to over-prediction, under-prediction, and sharpness.
  <img src="./figures/boxplot.png" alt="Boxplots of weighted interval score by model and forecasting period for the years 2021 - 23" /></p>
-<p><em>Fig 1: Comparison of forecasting model (submitted and baseline) performance in terms of (relative) WIS, for the 4 different forecast horizons and the overall performance. Lower WIS indicates better performance. Boxplots are summaries of WIS scores for all counties and weeks for which a forecast was submitted. Models may differ in weeks and counties for which they have provied forecasts. Forecasts from baseline models exist for all counties and dates.</em></p>
+<p><em>Fig 1: Comparison of forecasting model (submitted and baseline) performances in terms of (relative) WIS for the 4 different forecast horizons and the overall performance. Lower WIS indicates better performance. Boxplots are summaries of WIS scores for all counties and weeks for which a forecast was submitted. Models may differ in weeks and counties for which they have provided forecasts. Forecasts from baseline models exist for all counties and dates.</em></p>
 
 </div>
 </div>
@@ -14721,7 +14721,7 @@ body {font-family: Arial;}
 <div class="jp-Collapser jp-InputCollapser jp-Cell-inputCollapser">
 </div>
 <div class="jp-InputArea jp-Cell-inputArea"><div class="jp-RenderedHTMLCommon jp-RenderedMarkdown jp-MarkdownOutput " data-mime-type="text/markdown">
-<p>Table 1: (2021) Comparison of forecasting model (submitted and baseline) performance in terms of WIS, for the 4 different forecast horizons and the overall performance. Here the mean and 95% CI of the computed WIS scores is shown.</p>
+<p>Table 1: (2021) Comparison of forecasting model (submitted and baseline) performances in terms of WIS for the 4 different forecast horizons and the overall performance. Here, the mean and 95% CI of the computed WIS scores is shown.</p>
 
 </div>
 </div>
@@ -14843,7 +14843,7 @@ body {font-family: Arial;}
 <div class="jp-Collapser jp-InputCollapser jp-Cell-inputCollapser">
 </div>
 <div class="jp-InputArea jp-Cell-inputArea"><div class="jp-RenderedHTMLCommon jp-RenderedMarkdown jp-MarkdownOutput " data-mime-type="text/markdown">
-<p>Table 2: (2022) Comparison of forecasting model (submitted and baseline) performance in terms of WIS, for the 4 different forecast horizons and the overall performance. Here the mean and 95% CI of the computed WIS scores is shown.</p>
+<p>Table 2: (2022) Comparison of forecasting model (submitted and baseline) performances in terms of WIS for the 4 different forecast horizons and the overall performance. Here, the mean and 95% CI of the computed WIS scores is shown.</p>
 
 </div>
 </div>
@@ -14974,7 +14974,7 @@ body {font-family: Arial;}
 <div class="jp-Collapser jp-InputCollapser jp-Cell-inputCollapser">
 </div>
 <div class="jp-InputArea jp-Cell-inputArea"><div class="jp-RenderedHTMLCommon jp-RenderedMarkdown jp-MarkdownOutput " data-mime-type="text/markdown">
-<p>Table 3: (2023) Comparison of forecasting model (submitted and baseline) performance in terms of WIS, for the 4 different forecast horizons and the overall performance. Here the mean and 95% CI of the computed WIS scores is shown.</p>
+<p>Table 3: (2023) Comparison of forecasting model (submitted and baseline) performances in terms of WIS for the 4 different forecast horizons and the overall performance. Here, the mean and 95% CI of the computed WIS scores is shown.</p>
 
 </div>
 </div>
@@ -15019,38 +15019,38 @@ body {font-family: Arial;}
     <tr>
       <th>0</th>
       <td>RKIsurv2-arima</td>
-      <td>35.22 (29.3 - 41.14)</td>
-      <td>36.03 (28.71 - 43.36)</td>
-      <td>37.61 (31.68 - 43.54)</td>
-      <td>39.32 (35.53 - 43.11)</td>
-      <td>36.62 (34.2 - 39.04)</td>
+      <td>35.39 (29.62 - 41.16)</td>
+      <td>36.18 (28.98 - 43.39)</td>
+      <td>37.75 (31.94 - 43.56)</td>
+      <td>39.29 (35.48 - 43.1)</td>
+      <td>36.71 (34.36 - 39.06)</td>
     </tr>
     <tr>
       <th>1</th>
       <td>RKIsurv2-etsAAA</td>
-      <td>41.43 (33.77 - 49.08)</td>
-      <td>39.5 (30.94 - 48.06)</td>
-      <td>44.29 (35.67 - 52.91)</td>
-      <td>47.19 (41.28 - 53.09)</td>
-      <td>46.42 (43.4 - 49.45)</td>
+      <td>41.63 (34.14 - 49.13)</td>
+      <td>39.68 (31.24 - 48.12)</td>
+      <td>44.4 (35.88 - 52.93)</td>
+      <td>47.32 (41.53 - 53.11)</td>
+      <td>46.43 (43.41 - 49.45)</td>
     </tr>
     <tr>
       <th>2</th>
       <td>RKIsurv2-etsAAN</td>
-      <td>46.66 (38.28 - 55.03)</td>
-      <td>46.3 (36.8 - 55.8)</td>
-      <td>48.44 (39.75 - 57.12)</td>
-      <td>52.48 (46.21 - 58.75)</td>
-      <td>52.49 (49.27 - 55.71)</td>
+      <td>46.94 (38.77 - 55.1)</td>
+      <td>46.54 (37.21 - 55.87)</td>
+      <td>48.7 (40.22 - 57.18)</td>
+      <td>52.53 (46.34 - 58.73)</td>
+      <td>52.62 (49.5 - 55.74)</td>
     </tr>
     <tr>
       <th>3</th>
       <td>RKIsurv2-etsANN</td>
-      <td>29.21 (23.81 - 34.61)</td>
-      <td>30.9 (23.47 - 38.33)</td>
-      <td>32.76 (26.22 - 39.3)</td>
-      <td>31.29 (27.81 - 34.76)</td>
-      <td>28.43 (25.38 - 31.47)</td>
+      <td>29.3 (23.98 - 34.63)</td>
+      <td>30.99 (23.61 - 38.37)</td>
+      <td>32.82 (26.32 - 39.31)</td>
+      <td>31.29 (27.83 - 34.75)</td>
+      <td>28.47 (25.44 - 31.49)</td>
     </tr>
   </tbody>
 </table>
@@ -15071,7 +15071,7 @@ body {font-family: Arial;}
 <div class="jp-Collapser jp-InputCollapser jp-Cell-inputCollapser">
 </div>
 <div class="jp-InputArea jp-Cell-inputArea"><div class="jp-RenderedHTMLCommon jp-RenderedMarkdown jp-MarkdownOutput " data-mime-type="text/markdown">
-<h2 id="Performance-over-time">Performance over time<a class="anchor-link" href="#Performance-over-time">&#182;</a></h2><p>The forecasting performance of each individual model in terms of relative WIS for each time point a forecast was submitted. The performance of the submitted model (blue lines) is compared to a basline model (green lines). The average WIS per forecast date over all counties is shown for the four different forecasting horizons. An ARIMA model was chosen as the baseline.</p>
+<h2 id="Performance-over-time">Performance over time<a class="anchor-link" href="#Performance-over-time">&#182;</a></h2><p>The forecasting performance of each individual model in terms of relative WIS for each time point a forecast was submitted is shown. The performance of the submitted model (blue lines) is compared to a baseline model (green lines). The average WIS per forecast date over all counties is shown for the four different forecasting horizons. An ARIMA model was chosen as the baseline.</p>
 
 </div>
 </div>
@@ -15117,7 +15117,7 @@ body {font-family: Arial;}
 <div class="jp-Collapser jp-InputCollapser jp-Cell-inputCollapser">
 </div>
 <div class="jp-InputArea jp-Cell-inputArea"><div class="jp-RenderedHTMLCommon jp-RenderedMarkdown jp-MarkdownOutput " data-mime-type="text/markdown">
-<h2 id="Performance-contribution">Performance contribution<a class="anchor-link" href="#Performance-contribution">&#182;</a></h2><p>The three components of the WIS are here shown for each idivual model and each time pojt for which a forecadt was submitted. The components of the WIS are penalties for over-prediction (red), under-prediction (green) and for lack of sharpness of the predictive distribution (blue).</p>
+<h2 id="Performance-contribution">Performance contribution<a class="anchor-link" href="#Performance-contribution">&#182;</a></h2><p>The three components of the WIS are for each individual model and each time point for which a forecast was submitted is shown. The components of the WIS are penalties for over-prediction (red), under-prediction (green) and for lack of sharpness of the predictive distribution (blue).</p>
 
 </div>
 </div>
@@ -15147,7 +15147,7 @@ body {font-family: Arial;}
 <div class="jp-Collapser jp-InputCollapser jp-Cell-inputCollapser">
 </div>
 <div class="jp-InputArea jp-Cell-inputArea"><div class="jp-RenderedHTMLCommon jp-RenderedMarkdown jp-MarkdownOutput " data-mime-type="text/markdown">
-<h1 id="Relative-scores">Relative scores<a class="anchor-link" href="#Relative-scores">&#182;</a></h1><p>The Relative WIS (column rel_wis) is a relative measure of forecast performance which takes into account that different teams may not cover the exact same set of forecast targets (i.e., weeks and locations). Loosely speaking, a relative WIS of X means that averaged over the targets a given team addressed, its WIS was X times higher/lower than the the performance of the baseline model described in <a href="https://www.medrxiv.org/content/10.1101/2021.02.03.21250974v1">Cramer et al. (2021</a>). Smaller values are thus better and a value below one means that the model has above average performance. The relative WIS is computed using a ‘pairwise comparison tournament’ where for each pair of models a mean score ratio is computed based on the set of shared targets. The relative WIS is the geometric mean of these ratios. Details on the computation can be found in <a href="https://www.medrxiv.org/content/10.1101/2021.02.03.21250974v1">Cramer et al. (2021</a>.</p>
+<h1 id="Relative-scores">Relative scores<a class="anchor-link" href="#Relative-scores">&#182;</a></h1><p>The Relative WIS (column rel_wis) is a relative measure of forecast performance which takes into account that different teams may not cover the exact same set of forecast targets (i.e., weeks and locations). Loosely speaking, a relative WIS of X means that averaged over the targets a given team addressed, its WIS was X times higher/lower than the performance of the baseline model described in <a href="https://www.medrxiv.org/content/10.1101/2021.02.03.21250974v1">Cramer et al. (2021)</a>. Smaller values are thus better and a value below one means that the model performers above average. The relative WIS is computed using a ‘pairwise comparison tournament’ where for each pair of models a mean score ratio is computed based on the set of shared targets. The relative WIS is the geometric mean of these ratios. Details on the computation can be found in <a href="https://www.medrxiv.org/content/10.1101/2021.02.03.21250974v1">Cramer et al. (2021)</a>.</p>
 
 </div>
 </div>
@@ -15206,65 +15206,38 @@ body {font-family: Arial;}
       <td>84</td>
       <td>1.000000</td>
       <td>1.000000</td>
-      <td>0.534817</td>
-      <td>0.797371</td>
+      <td>0.535626</td>
+      <td>0.797723</td>
     </tr>
     <tr>
       <th>1</th>
-      <td>HPI-baseMpnnLstm</td>
-      <td>15</td>
-      <td>0.512952</td>
-      <td>0.558373</td>
-      <td>0.285309</td>
-      <td>0.635565</td>
+      <td>RKIsurv2-etsANN</td>
+      <td>84</td>
+      <td>0.911168</td>
+      <td>0.805396</td>
+      <td>0.476652</td>
+      <td>0.723540</td>
     </tr>
     <tr>
       <th>2</th>
-      <td>HPI-decomp1</td>
-      <td>21</td>
-      <td>1.905669</td>
-      <td>1.223774</td>
-      <td>0.136381</td>
-      <td>0.304337</td>
+      <td>RKIsurv2-etsAAN</td>
+      <td>84</td>
+      <td>1.290116</td>
+      <td>1.321284</td>
+      <td>0.557146</td>
+      <td>0.806862</td>
     </tr>
     <tr>
       <th>3</th>
-      <td>HHI-seq2seq4096d21</td>
-      <td>1</td>
-      <td>8.242499</td>
-      <td>7.376012</td>
-      <td>0.000000</td>
-      <td>0.000000</td>
+      <td>RKIsurv2-etsAAA</td>
+      <td>84</td>
+      <td>1.210117</td>
+      <td>1.202267</td>
+      <td>0.542356</td>
+      <td>0.800169</td>
     </tr>
     <tr>
       <th>4</th>
-      <td>RKIsurv2-etsAAN</td>
-      <td>84</td>
-      <td>1.289246</td>
-      <td>1.320214</td>
-      <td>0.556374</td>
-      <td>0.806525</td>
-    </tr>
-    <tr>
-      <th>5</th>
-      <td>RKIsurv2-etsANN</td>
-      <td>84</td>
-      <td>0.912260</td>
-      <td>0.806550</td>
-      <td>0.475740</td>
-      <td>0.723058</td>
-    </tr>
-    <tr>
-      <th>6</th>
-      <td>RKIsurv2-etsAAA</td>
-      <td>84</td>
-      <td>1.209983</td>
-      <td>1.201999</td>
-      <td>0.541558</td>
-      <td>0.799821</td>
-    </tr>
-    <tr>
-      <th>7</th>
       <td>HHI-seq2seq4096d14</td>
       <td>1</td>
       <td>8.185643</td>
@@ -15273,7 +15246,7 @@ body {font-family: Arial;}
       <td>0.000000</td>
     </tr>
     <tr>
-      <th>8</th>
+      <th>5</th>
       <td>HHI-seq2seq4096d28</td>
       <td>1</td>
       <td>8.239705</td>
@@ -15282,13 +15255,40 @@ body {font-family: Arial;}
       <td>0.000000</td>
     </tr>
     <tr>
-      <th>9</th>
+      <th>6</th>
       <td>HHI-ConnstantSpreadTest</td>
       <td>1</td>
       <td>0.718878</td>
       <td>0.181011</td>
       <td>0.079663</td>
       <td>0.080021</td>
+    </tr>
+    <tr>
+      <th>7</th>
+      <td>HHI-seq2seq4096d21</td>
+      <td>1</td>
+      <td>8.242499</td>
+      <td>7.376012</td>
+      <td>0.000000</td>
+      <td>0.000000</td>
+    </tr>
+    <tr>
+      <th>8</th>
+      <td>HPI-baseMpnnLstm</td>
+      <td>15</td>
+      <td>0.512952</td>
+      <td>0.558373</td>
+      <td>0.285309</td>
+      <td>0.635565</td>
+    </tr>
+    <tr>
+      <th>9</th>
+      <td>HPI-decomp1</td>
+      <td>21</td>
+      <td>1.905669</td>
+      <td>1.223774</td>
+      <td>0.136381</td>
+      <td>0.304337</td>
     </tr>
   </tbody>
 </table>
