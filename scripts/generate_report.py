@@ -418,6 +418,10 @@ def plot_coverage_probability(df, coverage_col="within_", temporal_col="refdate"
 css_tab_navigation = """
 <style>
 body {font-family: Arial;}
+.jp-Cell{
+    max-width:1280px;
+    margin:0 auto;
+}
 
 /* Style the tab */
 .tab {
