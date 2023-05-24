@@ -14594,7 +14594,7 @@ body[data-format='mobile'] .jp-OutputArea-child .jp-OutputArea-output {
 <div class="jp-InputArea jp-Cell-inputArea"><div class="jp-RenderedHTMLCommon jp-RenderedMarkdown jp-MarkdownOutput " data-mime-type="text/markdown">
 <p><img src="figures/rki-logo.jpg"
      alt="Robert Koch Institut"
-     style="float: right; margin-right: 200px; margin-top:20px;" /></p>
+     style="float: right; margin-right: 100px; margin-top:20px;" /></p>
 <p><img src="figures/daki-fws.png"
      alt="DAKI-FWS"
      style="float: right; margin-right: 50px; margin-bottom:20px; height:80px; width:auto;"/></p>
@@ -14647,6 +14647,10 @@ function openTab(evt) {
 
 <style>
 body {font-family: Arial;}
+.jp-Cell{
+    max-width:1280px;
+    margin:0 auto;
+}
 
 /* Style the tab */
 .tab {
@@ -14710,7 +14714,7 @@ body {font-family: Arial;}
 <div class="jp-InputArea jp-Cell-inputArea"><div class="jp-RenderedHTMLCommon jp-RenderedMarkdown jp-MarkdownOutput " data-mime-type="text/markdown">
 <h1 id="Performance-Evaluation">Performance Evaluation<a class="anchor-link" href="#Performance-Evaluation">&#182;</a></h1><p>The performance of all forecasts will be evaluated by the (relative) weighted interval score <a href="https://cran.r-project.org/web/packages/scoringutils/vignettes/metric-details.html">WIS</a> which is a proper scoring rule that considers not only the point estimate but the entire predictive distribution. A smaller WIS indicates a better performance. The WIS allows to distinguish between performance loss due to over-prediction, under-prediction, and sharpness.
  <img src="./figures/boxplot.png" alt="Boxplots of weighted interval score by model and forecasting period for the years 2021 - 23" /></p>
-<p><em>Fig 1: Comparison of forecasting model (submitted and baseline) performances in terms of (relative) WIS for the 4 different forecast horizons and the overall performance. Lower WIS indicates better performance. Boxplots are summaries of WIS scores for all counties and weeks for which a forecast was submitted. Models may differ in weeks and counties for which they have provided forecasts. Forecasts from baseline models exist for all counties and dates.</em></p>
+<p>*<strong>Fig 1: Comparison of forecasting model (submitted and baseline) performances in terms of (relative) WIS for the 4 different forecast horizons and the overall performance. Lower WIS indicates better performance. Boxplots are summaries of WIS scores for all counties and weeks for which a forecast was submitted. Models may differ in weeks and counties for which they have provided forecasts. Forecasts from baseline models exist for all counties and dates.</strong>*</p>
 
 </div>
 </div>
@@ -14721,7 +14725,7 @@ body {font-family: Arial;}
 <div class="jp-Collapser jp-InputCollapser jp-Cell-inputCollapser">
 </div>
 <div class="jp-InputArea jp-Cell-inputArea"><div class="jp-RenderedHTMLCommon jp-RenderedMarkdown jp-MarkdownOutput " data-mime-type="text/markdown">
-<p>Table 1: (2021) Comparison of forecasting model (submitted and baseline) performances in terms of WIS for the 4 different forecast horizons and the overall performance. Here, the mean and 95% CI of the computed WIS scores is shown.</p>
+<p><strong>Table 1: (2021) Comparison of forecasting model (submitted and baseline) performances in terms of WIS for the 4 different forecast horizons and the overall performance. Here, the mean and 95% CI of the computed WIS scores is shown.</strong></p>
 
 </div>
 </div>
@@ -14843,7 +14847,7 @@ body {font-family: Arial;}
 <div class="jp-Collapser jp-InputCollapser jp-Cell-inputCollapser">
 </div>
 <div class="jp-InputArea jp-Cell-inputArea"><div class="jp-RenderedHTMLCommon jp-RenderedMarkdown jp-MarkdownOutput " data-mime-type="text/markdown">
-<p>Table 2: (2022) Comparison of forecasting model (submitted and baseline) performances in terms of WIS for the 4 different forecast horizons and the overall performance. Here, the mean and 95% CI of the computed WIS scores is shown.</p>
+<p><strong>Table 2: (2022) Comparison of forecasting model (submitted and baseline) performances in terms of WIS for the 4 different forecast horizons and the overall performance. Here, the mean and 95% CI of the computed WIS scores is shown.</strong></p>
 
 </div>
 </div>
@@ -14974,7 +14978,7 @@ body {font-family: Arial;}
 <div class="jp-Collapser jp-InputCollapser jp-Cell-inputCollapser">
 </div>
 <div class="jp-InputArea jp-Cell-inputArea"><div class="jp-RenderedHTMLCommon jp-RenderedMarkdown jp-MarkdownOutput " data-mime-type="text/markdown">
-<p>Table 3: (2023) Comparison of forecasting model (submitted and baseline) performances in terms of WIS for the 4 different forecast horizons and the overall performance. Here, the mean and 95% CI of the computed WIS scores is shown.</p>
+<p><strong>Table 3: (2023) Comparison of forecasting model (submitted and baseline) performances in terms of WIS for the 4 different forecast horizons and the overall performance. Here, the mean and 95% CI of the computed WIS scores is shown.</strong></p>
 
 </div>
 </div>
@@ -15019,38 +15023,38 @@ body {font-family: Arial;}
     <tr>
       <th>0</th>
       <td>RKIsurv2-arima</td>
-      <td>34.79 (29.2 - 40.38)</td>
-      <td>35.43 (28.45 - 42.41)</td>
-      <td>36.89 (31.15 - 42.62)</td>
-      <td>38.48 (34.51 - 42.46)</td>
-      <td>36.17 (33.72 - 38.63)</td>
+      <td>32.46 (27.28 - 37.63)</td>
+      <td>32.67 (26.37 - 38.97)</td>
+      <td>33.85 (28.39 - 39.31)</td>
+      <td>35.88 (31.83 - 39.94)</td>
+      <td>34.06 (31.29 - 36.83)</td>
     </tr>
     <tr>
       <th>1</th>
       <td>RKIsurv2-etsAAA</td>
-      <td>40.98 (33.78 - 48.18)</td>
-      <td>38.89 (30.76 - 47.02)</td>
-      <td>43.31 (35.02 - 51.6)</td>
-      <td>46.36 (40.5 - 52.22)</td>
-      <td>45.87 (42.8 - 48.93)</td>
+      <td>38.48 (32.04 - 44.92)</td>
+      <td>36.09 (28.92 - 43.26)</td>
+      <td>39.29 (31.62 - 46.96)</td>
+      <td>43.92 (38.7 - 49.14)</td>
+      <td>43.4 (40.0 - 46.8)</td>
     </tr>
     <tr>
       <th>2</th>
       <td>RKIsurv2-etsAAN</td>
-      <td>46.4 (38.64 - 54.16)</td>
-      <td>45.92 (37.06 - 54.78)</td>
-      <td>47.69 (39.48 - 55.89)</td>
-      <td>51.74 (45.68 - 57.79)</td>
-      <td>51.95 (48.69 - 55.21)</td>
+      <td>44.2 (37.33 - 51.08)</td>
+      <td>43.54 (35.85 - 51.22)</td>
+      <td>44.26 (36.83 - 51.69)</td>
+      <td>49.2 (43.71 - 54.68)</td>
+      <td>49.84 (46.54 - 53.13)</td>
     </tr>
     <tr>
       <th>3</th>
       <td>RKIsurv2-etsANN</td>
-      <td>28.64 (23.43 - 33.85)</td>
-      <td>30.2 (23.06 - 37.34)</td>
-      <td>31.83 (25.4 - 38.25)</td>
-      <td>30.49 (26.84 - 34.15)</td>
-      <td>27.97 (24.99 - 30.96)</td>
+      <td>26.21 (21.36 - 31.06)</td>
+      <td>27.4 (21.03 - 33.78)</td>
+      <td>28.48 (22.43 - 34.52)</td>
+      <td>27.92 (24.12 - 31.72)</td>
+      <td>25.87 (22.82 - 28.93)</td>
     </tr>
   </tbody>
 </table>
@@ -15086,7 +15090,7 @@ body {font-family: Arial;}
 <div class="jp-OutputArea-child">
 
 <div class="jp-RenderedHTMLCommon jp-RenderedHTML jp-OutputArea-output " data-mime-type="text/html">
-<div class="tabgroup"><div class="tab"><button class="tablinks active" onclick="openTab(event)">HPI-decomp1</button><button class="tablinks" onclick="openTab(event)">HHI-ConnstantSpreadTest</button><button class="tablinks" onclick="openTab(event)">HPI-baseMpnnLstm</button><button class="tablinks" onclick="openTab(event)">RKIsurv2-etsAAA</button><button class="tablinks" onclick="openTab(event)">RKIsurv2-etsAAN</button><button class="tablinks" onclick="openTab(event)">RKIsurv2-etsANN</button></div><div id="HPI-decomp1" class="tabcontent" style="display:block;"><img src="./figures/baseline_HPI-decomp1.png" alt="weighted interval score comparison HPI-decomp1" /></div><div id="HHI-ConnstantSpreadTest" class="tabcontent"><img src="./figures/baseline_HHI-ConnstantSpreadTest.png" alt="weighted interval score comparison HHI-ConnstantSpreadTest" /></div><div id="HPI-baseMpnnLstm" class="tabcontent"><img src="./figures/baseline_HPI-baseMpnnLstm.png" alt="weighted interval score comparison HPI-baseMpnnLstm" /></div><div id="RKIsurv2-etsAAA" class="tabcontent"><img src="./figures/baseline_RKIsurv2-etsAAA.png" alt="weighted interval score comparison RKIsurv2-etsAAA" /></div><div id="RKIsurv2-etsAAN" class="tabcontent"><img src="./figures/baseline_RKIsurv2-etsAAN.png" alt="weighted interval score comparison RKIsurv2-etsAAN" /></div><div id="RKIsurv2-etsANN" class="tabcontent"><img src="./figures/baseline_RKIsurv2-etsANN.png" alt="weighted interval score comparison RKIsurv2-etsANN" /></div></div>
+<div class="tabgroup"><div class="tab"><button class="tablinks active" onclick="openTab(event)">HPI-baseMpnnLstm</button><button class="tablinks" onclick="openTab(event)">RKIsurv2-etsANN</button><button class="tablinks" onclick="openTab(event)">HPI-decomp1</button><button class="tablinks" onclick="openTab(event)">RKIsurv2-etsAAN</button><button class="tablinks" onclick="openTab(event)">RKIsurv2-etsAAA</button><button class="tablinks" onclick="openTab(event)">HHI-ConnstantSpreadTest</button></div><div id="HPI-baseMpnnLstm" class="tabcontent" style="display:block;"><img src="./figures/baseline_HPI-baseMpnnLstm.png" alt="weighted interval score comparison HPI-baseMpnnLstm" /></div><div id="RKIsurv2-etsANN" class="tabcontent"><img src="./figures/baseline_RKIsurv2-etsANN.png" alt="weighted interval score comparison RKIsurv2-etsANN" /></div><div id="HPI-decomp1" class="tabcontent"><img src="./figures/baseline_HPI-decomp1.png" alt="weighted interval score comparison HPI-decomp1" /></div><div id="RKIsurv2-etsAAN" class="tabcontent"><img src="./figures/baseline_RKIsurv2-etsAAN.png" alt="weighted interval score comparison RKIsurv2-etsAAN" /></div><div id="RKIsurv2-etsAAA" class="tabcontent"><img src="./figures/baseline_RKIsurv2-etsAAA.png" alt="weighted interval score comparison RKIsurv2-etsAAA" /></div><div id="HHI-ConnstantSpreadTest" class="tabcontent"><img src="./figures/baseline_HHI-ConnstantSpreadTest.png" alt="weighted interval score comparison HHI-ConnstantSpreadTest" /></div></div>
 </div>
 
 </div>
@@ -15158,7 +15162,7 @@ body {font-family: Arial;}
 <div class="jp-Collapser jp-InputCollapser jp-Cell-inputCollapser">
 </div>
 <div class="jp-InputArea jp-Cell-inputArea"><div class="jp-RenderedHTMLCommon jp-RenderedMarkdown jp-MarkdownOutput " data-mime-type="text/markdown">
-<p>Table 4: Relative WIS and MAE scores per model, with ARIMA as the baseline.</p>
+<p><strong>Table 4: Relative WIS and MAE scores per model, with ARIMA as the baseline.</strong></p>
 
 </div>
 </div>
@@ -15203,38 +15207,38 @@ body {font-family: Arial;}
     <tr>
       <th>0</th>
       <td>RKIsurv2-arima</td>
-      <td>85</td>
+      <td>89</td>
       <td>1.000000</td>
       <td>1.000000</td>
-      <td>0.541202</td>
-      <td>0.800154</td>
+      <td>0.560103</td>
+      <td>0.808388</td>
     </tr>
     <tr>
       <th>1</th>
-      <td>RKIsurv2-etsAAA</td>
-      <td>85</td>
-      <td>1.211038</td>
-      <td>1.204284</td>
-      <td>0.547849</td>
-      <td>0.802574</td>
+      <td>RKIsurv2-etsAAN</td>
+      <td>89</td>
+      <td>1.316318</td>
+      <td>1.350567</td>
+      <td>0.580493</td>
+      <td>0.817046</td>
     </tr>
     <tr>
       <th>2</th>
-      <td>RKIsurv2-etsAAN</td>
-      <td>85</td>
-      <td>1.295371</td>
-      <td>1.327479</td>
-      <td>0.562464</td>
-      <td>0.809184</td>
+      <td>RKIsurv2-etsAAA</td>
+      <td>89</td>
+      <td>1.215982</td>
+      <td>1.212007</td>
+      <td>0.566478</td>
+      <td>0.810708</td>
     </tr>
     <tr>
       <th>3</th>
       <td>RKIsurv2-etsANN</td>
-      <td>85</td>
-      <td>0.907677</td>
-      <td>0.802969</td>
-      <td>0.482945</td>
-      <td>0.726862</td>
+      <td>89</td>
+      <td>0.896462</td>
+      <td>0.795717</td>
+      <td>0.504248</td>
+      <td>0.738117</td>
     </tr>
     <tr>
       <th>4</th>
@@ -15331,7 +15335,8 @@ body {font-family: Arial;}
 <div class="jp-Collapser jp-InputCollapser jp-Cell-inputCollapser">
 </div>
 <div class="jp-InputArea jp-Cell-inputArea"><div class="jp-RenderedHTMLCommon jp-RenderedMarkdown jp-MarkdownOutput " data-mime-type="text/markdown">
-<h2 id="Coverage-probability">Coverage probability<a class="anchor-link" href="#Coverage-probability">&#182;</a></h2>
+<h2 id="Coverage-probability">Coverage probability<a class="anchor-link" href="#Coverage-probability">&#182;</a></h2><p>Shown here is the coverage of three different confidence intervals (50%, 80%, 95%) over time for each model. This shows how well calibrated the models are. Models are perfectly calibrated when the forecasted  x% confidence interval covers the true value x% of the time, e.g. the true value will be in the 50% confidence interval for half of the forecasts. A too low coverage means that confidence intervals are too narrow on average. A too high coverage means that confidence Intervals are too wide on average.</p>
+
 </div>
 </div>
 </div>
@@ -15344,6 +15349,17 @@ body {font-family: Arial;}
 </div>
 <div class="jp-InputArea jp-Cell-inputArea"><div class="jp-RenderedHTMLCommon jp-RenderedMarkdown jp-MarkdownOutput " data-mime-type="text/markdown">
 <p><img src="./figures/coverage.png" alt="Coverage probabilities per model" /></p>
+
+</div>
+</div>
+</div>
+</div>
+<div class="jp-Cell jp-MarkdownCell jp-Notebook-cell">
+<div class="jp-Cell-inputWrapper">
+<div class="jp-Collapser jp-InputCollapser jp-Cell-inputCollapser">
+</div>
+<div class="jp-InputArea jp-Cell-inputArea"><div class="jp-RenderedHTMLCommon jp-RenderedMarkdown jp-MarkdownOutput " data-mime-type="text/markdown">
+<p><strong>Fig. 5: Coverage over time for each model and three different prediction intervals (50%, 80%, 95%). The dashed line shows the expected coverage for the given prediction interval.</strong></p>
 
 </div>
 </div>
