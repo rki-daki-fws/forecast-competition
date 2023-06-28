@@ -134,7 +134,7 @@ if __name__ == "__main__":
     files_added = []
     files_changed = []
     # expects files in submissions/TeamName/Date_Modelname_locationtype_forcastvalue.parquet
-    file_pattern = re.compile(r"^\.\./submissions/([a-zA-Z0-9]+)/([0-9]{4}-[0-9]{2}-[0-9]{2})_([a-zA-Z0-9]+)_(LK|BL)_(cases|rvalue)\.parquet")
+    file_pattern = re.compile(r"^submissions/([a-zA-Z0-9]+)/([0-9]{4}-[0-9]{2}-[0-9]{2})_([a-zA-Z0-9]+)_(LK|BL)_(cases|rvalue)\.parquet")
 
     #if os.environ.get('GITHUB_EVENT_NAME') == 'pull_request_target' or local:
     # Fetch the  PR number from the event json
@@ -182,7 +182,7 @@ if __name__ == "__main__":
 
         # for security reasons working on pr base branch, need to download file contents from merged branch here
         # https://github.com/orgs/community/discussions/25961
-        s.df = load_submission_data(pr, s.filepath)
+        s.df = load_submission_data(pr, "../" + s.filepath)  # parent dir holds submissions folder
 
         # check format requirements here
         if not check_format(gt, s):
