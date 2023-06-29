@@ -167,8 +167,8 @@ if __name__ == "__main__":
             sys.exit(f"Exiting automatic pipeline, submitted file did not adhere to naming convenction: {f.filename}")
         elif utils.date_is_sunday(matched.groups()[1]) and utils.greater_date(matched.groups()[1], "2021-04-11"):
 
-            submissions.append(Submission(f.filename, matched.groups()[1], matched.groups()[3], matched.groups()[4],
-                                          pd.DataFrame()))
+            submissions.append(Submission(f.filename, matched.groups()[0], matched.groups()[2], matched.groups()[1],
+                                          matched.groups()[3], matched.groups()[4], pd.DataFrame()))
         else:
             sys.exit(f"Exiting automatic pipeline, your submission does not seem to match one of the forecasting periods: {f.filename}")
     else:
