@@ -177,12 +177,12 @@ if __name__ == "__main__":
     for s in submissions:
         print(s.filepath)
         # open groundtruth file that matches
-        gt = pd.read_csv(f"../challenge-data/evaluation/2022-09-15_{s.location_type}_{s.target_type}.csv",
+        gt = pd.read_csv(f"challenge-data/evaluation/2022-09-15_{s.location_type}_{s.target_type}.csv",
                          sep=",", decimal=".", header=0)
 
         # for security reasons working on pr base branch, need to download file contents from merged branch here
         # https://github.com/orgs/community/discussions/25961
-        s.df = load_submission_data(pr, "../" + s.filepath)  # parent dir holds submissions folder
+        s.df = load_submission_data(pr, s.filepath)  # parent dir holds submissions folder
 
         # check format requirements here
         if not check_format(gt, s):
