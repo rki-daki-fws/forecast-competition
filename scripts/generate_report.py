@@ -174,7 +174,7 @@ def wis_boxplot(df, hue, var_name):
     df_22 = df[(df.refdate >= np.datetime64("2022-01-01")) & (df.refdate < np.datetime64("2023-01-01"))]
     df_23 = df[df.refdate >= np.datetime64("2023-01-01")]
 
-    levels = set(df_21[hue]).union(set(df_22[hue]))
+    levels = set(df[hue])
     levels = sorted(list(levels), reverse=True)
     colors = sns.color_palette("Set1", n_colors=len(levels))
     palette = {level: color for level, color in zip(levels, colors)}
