@@ -35,7 +35,7 @@ jobs:
 
       - name: Execute notebook
         if: env.DOWEEK != 7
-        run: jupyter nbconvert --to html --no-input --execute --output gh-pages/index.html evaluation_report.ipynb
+        run: jupyter nbconvert --to html --no-input --execute --output docs/index.html evaluation_report.ipynb
 
       - name: Commit & push changes
         if: env.DOWEEK != 7
