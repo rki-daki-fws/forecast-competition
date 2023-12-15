@@ -1,0 +1,42 @@
+name: Reduce disc space
+
+on:
+  workflow_dispatch:
+    inputs:
+      manual-trigger:
+        description: 'Run the optimization workflow'
+        default: 'Run'
+
+jobs:
+  optimize-repo:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout Repository
+        uses: actions/checkout@v3
+
+      - name: Echo Disk Space Before Optimization
+        run: |
+          du -sh .git
+
+      - name: Garbage Collection
+        run: git gc --prune=all
+
+      - name: Echo Disk Space After Garbage Collection
+        run: |
+          du -sh .git
+
+      - name: Aggressive Pruning
+        run: |
+          git reflog expire --expire=now --all
+          git gc --prune=now --aggressive
+
+      - name: Echo Disk Space After Aggressive Pruning
+        run: |
+          du -sh .git
+
+      #- name: Commit and Push Changes
+      #  run: |
+      #    git add .
+      #    git commit -m "Optimize repository size"
+      #    git push origin HEAD
