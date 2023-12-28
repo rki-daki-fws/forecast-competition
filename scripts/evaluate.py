@@ -164,7 +164,7 @@ if __name__ == "__main__":
     #repo = init_repo_obj('rki-daki-fws/forecast-competition')
 
     # load results
-    resfile = "../results/res.pickle"
+    resfile = "../results/res.csv"
     res = utils.load_results(resfile)  # it is a DF now
     before = time.time()
     submissions_dir = "../submissions"

@@ -39,11 +39,14 @@ def load_results_file(filepath):
     Expects columns [refdate, team, model, target, metric_1,... metric_n]
     filepath: str, path to file
     """
-    try:
-        with open(filepath, "rb") as fp:
-            df = pickle.load(fp)
-    except:
-        df = pd.read_pickle(filepath, compression="gzip")
+    if filepath[-4:] == ".csv":
+        df = pd.read_csv(filepath)
+    else:
+        try:
+            with open(filepath, "rb") as fp:
+                df = pickle.load(fp)
+        except:
+            df = pd.read_pickle(filepath, compression="gzip")
 
     if isinstance(df, list):
         df = pd.DataFrame(df[1:] if len(df) > 1 else [], columns=df[0])  # expects header in first row
@@ -237,13 +240,14 @@ def cutoff_to_slices(df, cutoffs):
     return slices
 
 
-def df_to_split_files(df, save_path, max_size_mb=95):
+def df_to_split_files(df, save_path, max_size_mb=45):
 
     path, basename, ending = separate_path(save_path)
 
     # let's try saving file first, because we don't know compression rate
     first_file = f"{path}{basename}{1}{ending}"
-    pickle_results(first_file, df)
+    #pickle_results(first_file, df)
+    df.to_csv(first_file, index=False)
     full_size = filesize_mb(first_file)
     if full_size <= max_size_mb:
         return
@@ -252,7 +256,8 @@ def df_to_split_files(df, save_path, max_size_mb=95):
     slices = cutoff_to_slices(df, cutoffs)
 
     for i, s in enumerate(slices):
-        pickle_results(f"{path}{basename}{i+1}{ending}", s)
+        #pickle_results(f"{path}{basename}{i+1}{ending}", s)
+        s.to_csv(f"{path}{basename}{i+1}{ending}", index=False)
 
 
 def separate_path(fpath: str) -> Tuple[str, str, str]:
@@ -280,7 +285,8 @@ if __name__ == "__main__":
     #print(df)
     filepath = "../results/res.pickle"
     res = load_results(filepath)
+
     print(res.head())
 
     print(res.shape)
-    df_to_split_files(res, filepath)
+    df_to_split_files(res, "../results/res.csv")
