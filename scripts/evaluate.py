@@ -164,10 +164,11 @@ if __name__ == "__main__":
     #repo = init_repo_obj('rki-daki-fws/forecast-competition')
 
     # load results
-    resfile = "../results/res.pickle"
-    res = utils.load_results(resfile)  # it is a DF now
-    before = time.time()
+    res_dir = "../results"
     submissions_dir = "../submissions"
+
+    res = utils.load_results(res_dir, submissions_dir)  # it is a DF now
+    before = time.time()
     # get all submission filenames
     submission_files = glob.glob(f"{submissions_dir}{os.path.sep}*{os.path.sep}*.parquet")
     # naming already validated, can trust it here
@@ -223,7 +224,14 @@ if __name__ == "__main__":
             res_entries += new_entries
 
         if len(res_entries) > num_entries_before:
-            utils.df_to_split_files(pd.DataFrame(res_entries, columns=res_columns), resfile)
+            # groupby model, team, model, location_type, variable
+            grouping_columns = ["team", "model", "location_type", "pred_variable"]
+            grouped = pd.DataFrame(res_entries, columns=res_columns).groupby(grouping_columns)
+            for model_info, model_results in grouped:
+                tmp_df = model_results.loc[:,
+                         [col for col in model_results.columns.to_list() if col not in grouping_columns]]
+
+                utils.df_to_split_files(tmp_df, f"../results/res_{'_'.join(model_info)}.csv")
 
             # now done in workflow
             # update files using github API
