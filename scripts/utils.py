@@ -58,12 +58,38 @@ def load_results_file(filepath):
     return df
 
 
-def load_results(fpath) -> pd.DataFrame:
-    dirpath, basename, ending = separate_path(fpath)
-    files = glob.glob(f"{dirpath}{basename}*{ending}")
+def load_results(results_dir="../results", submissions_dir="../submissions") -> pd.DataFrame:
+
+    # glob search results dir
+    files = glob.glob(f"{results_dir}/*.csv")
+
     dfs = []
     for f in files:
-        dfs.append(load_results_file(f))
+        try:
+            # res_team_model_locationtype_predvariable_enum.csv
+            _, team, model, location_type, pred_variable, _ = f.split("_")  # unpacking might not be possible
+        except:
+            continue
+
+        # check for existence of submission of that team model
+        if not os.path.isdir(os.path.join(submissions_dir, team)) :
+            print(f"there are no submissions for team {team}")
+            continue
+        if not len(glob.glob(os.path.join(submissions_dir, team, "*")+f"{'_'.join([model, location_type, pred_variable])}.parquet")):
+            print(f"there are no submissions for team {team} with model {model}")
+            continue
+
+        subset_df = pd.read_csv(f)
+        subset_df.target = series2date(subset_df.target)
+        subset_df.refdate = series2date(subset_df.refdate)
+        # add columns from file name (team, model, location_type, pred_variable
+        # concat/hstack would be faster, but not sure if I used integer index of columns somewhere, so order might matter
+        subset_df.insert(1, "team", subset_df.shape[0] * [team])
+        subset_df.insert(2, "model", subset_df.shape[0] * [model])
+        subset_df.insert(3, "location_type", subset_df.shape[0] * [location_type])
+        subset_df.insert(4, "pred_variable", subset_df.shape[0] * [pred_variable])
+
+        dfs.append(subset_df)
 
     output = pd.concat(dfs)
     if isinstance(output.columns, pd.core.indexes.multi.MultiIndex):
@@ -245,9 +271,9 @@ def df_to_split_files(df, save_path, max_size_mb=45):
     path, basename, ending = separate_path(save_path)
 
     # let's try saving file first, because we don't know compression rate
-    first_file = f"{path}{basename}{1}{ending}"
-    #pickle_results(first_file, df)
-    df.to_csv(first_file, index=False)
+    first_file = f"{path}/{basename}_{1}{ending}"
+
+    df.to_csv(first_file, index=False, float_format='%.2f')
     full_size = filesize_mb(first_file)
     if full_size <= max_size_mb:
         return
@@ -256,25 +282,18 @@ def df_to_split_files(df, save_path, max_size_mb=45):
     slices = cutoff_to_slices(df, cutoffs)
 
     for i, s in enumerate(slices):
-        #pickle_results(f"{path}{basename}{i+1}{ending}", s)
-        s.to_csv(f"{path}{basename}{i+1}{ending}", index=False)
+        s.to_csv(f"{path}/{basename}_{i+1}{ending}", index=False, float_format='%.2f')
 
 
 def separate_path(fpath: str) -> Tuple[str, str, str]:
     """ Separates file path into directory path, file name (without trailing number) and file extension """
-    # pattern = r"^(.*/)?([^.]+)(\.[^./]+)$"  # will match any file name
-    pattern = r"^(.*/)?([A-Za-z_-]+)(?:[0-9]*)(\.[^./]+)$"  # will disregard trailing numbers in file name
-    match = re.match(pattern, fpath)
 
-    if not match:
-        raise ValueError(f"the specified file path {fpath} does not meet the assumptions")
+    directory_path, file_name_with_ext = os.path.split(fpath)
+    file_name, file_extension = os.path.splitext(file_name_with_ext)
 
-    directory_path = match.group(1)
-    file_name = match.group(2)
-    file_extension = match.group(3)
-
-    if directory_path is None:
-        directory_path = ""
+    """if "_" in file_name:
+        fn_split = file_name.split("_")
+        file_name = "_".join(fn_split[:-1]) # removes trailing number"""
 
     return directory_path, file_name, file_extension
 
@@ -283,10 +302,17 @@ if __name__ == "__main__":
 
     #df = get_opendata("2022-09-30")
     #print(df)
-    filepath = "../results/res.pickle"
-    res = load_results(filepath)
+
+    res = load_results("../results", "../submissions")
 
     print(res.head())
 
     print(res.shape)
-    df_to_split_files(res, "../results/res.csv")
+    # groupby model, team, model, location_type, variable
+    grouping_columns = ["team", "model", "location_type", "pred_variable"]
+    grouped = res.groupby(grouping_columns)
+    for model_info, model_results in grouped:
+        #print(group.loc[:, [col for col in group.columns.to_list() if col not in grouping_columns]])
+        tmp_df = model_results.loc[:, [col for col in model_results.columns.to_list() if col not in grouping_columns]]
+        # using group.columns.difference(grouping_columns) results in alphabetical ordering; undesired
+        df_to_split_files(tmp_df, f"../results/res_{'_'.join(model_info)}.csv")
