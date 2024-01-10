@@ -61,7 +61,7 @@ def load_results_file(filepath):
 def load_results(results_dir="../results", submissions_dir="../submissions") -> pd.DataFrame:
 
     # glob search results dir
-    files = glob.glob(f"{results_dir}/*.csv")
+    files = sorted(glob.glob(f"{results_dir}/*.csv"))
 
     dfs = []
     for f in files:

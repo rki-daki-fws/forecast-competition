@@ -339,7 +339,7 @@ def create_figures_baseline_comparison(df: pd.DataFrame, baseline: Optional[str]
 
         plt.legend()
         plt.tight_layout()
-        plt.savefig(f"figures/baseline_{m}.png")
+        plt.savefig(f"docs/figures/baseline_{m}.png")
 
 
 def create_table3(df_results):
@@ -411,7 +411,7 @@ def plot_coverage_probability(df, coverage_col="within_", temporal_col="refdate"
         axis[0].set(ylim=(0, 1), ylabel="Coverage probability")
 
     fig.tight_layout()
-    plt.savefig("figures/coverage.png")
+    plt.savefig("docs/figures/coverage.png")
 
 
 # import IPython.display inside notebook, run display(HTML(code))
