@@ -42,7 +42,7 @@ jobs:
         run: |
           git config --global user.email "${GITHUB_ACTOR}@users.noreply.github.com"
           git config --global user.name "${GITHUB_ACTOR}"
-          git add gh-pages/* evaluation_report.ipynb
+          git add docs/* evaluation_report.ipynb
           git commit -m 'update evaluation report'
           git push
       - name: create PR
