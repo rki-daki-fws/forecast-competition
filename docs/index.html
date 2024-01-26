@@ -14592,10 +14592,10 @@ body[data-format='mobile'] .jp-OutputArea-child .jp-OutputArea-output {
 <div class="jp-Collapser jp-InputCollapser jp-Cell-inputCollapser">
 </div>
 <div class="jp-InputArea jp-Cell-inputArea"><div class="jp-RenderedHTMLCommon jp-RenderedMarkdown jp-MarkdownOutput " data-mime-type="text/markdown">
-<p><img src="figures/rki-logo.jpg"
+<p><img src="docs/figures/rki-logo.jpg"
      alt="Robert Koch Institut"
      style="float: right; margin-right: 100px; margin-top:20px;" /></p>
-<p><img src="figures/daki-fws.png"
+<p><img src="docs/figures/daki-fws.png"
      alt="DAKI-FWS"
      style="float: right; margin-right: 50px; margin-bottom:20px; height:80px; width:auto;"/></p>
 <h1>Forecasting competition evaluation report</h1>
@@ -14713,7 +14713,7 @@ body {font-family: Arial;}
 </div>
 <div class="jp-InputArea jp-Cell-inputArea"><div class="jp-RenderedHTMLCommon jp-RenderedMarkdown jp-MarkdownOutput " data-mime-type="text/markdown">
 <h1 id="Performance-Evaluation">Performance Evaluation<a class="anchor-link" href="#Performance-Evaluation">&#182;</a></h1><p>The performance of all forecasts will be evaluated by the (relative) weighted interval score <a href="https://cran.r-project.org/web/packages/scoringutils/vignettes/metric-details.html">WIS</a> which is a proper scoring rule that considers not only the point estimate but the entire predictive distribution. A smaller WIS indicates a better performance. The WIS allows to distinguish between performance loss due to over-prediction, under-prediction, and sharpness.
- <img src="./figures/boxplot.png" alt="Boxplots of weighted interval score by model and forecasting period for the years 2021 - 23" /></p>
+ <img src="./docs/figures/boxplot.png" alt="Boxplots of weighted interval score by model and forecasting period for the years 2021 - 23" /></p>
 <p>*<strong>Fig 1: Comparison of forecasting model (submitted and baseline) performances in terms of (relative) WIS for the 4 different forecast horizons and the overall performance. Lower WIS indicates better performance. Boxplots are summaries of WIS scores for all counties and weeks for which a forecast was submitted. Models may differ in weeks and counties for which they have provided forecasts. Forecasts from baseline models exist for all counties and dates.</strong>*</p>
 
 </div>
@@ -15041,47 +15041,47 @@ body {font-family: Arial;}
     <tr>
       <th>0</th>
       <td>HHI-GRUEncDec</td>
-      <td>24.93 (15.17 - 34.7)</td>
-      <td>28.04 (15.76 - 40.32)</td>
-      <td>27.74 (16.17 - 39.3)</td>
-      <td>25.22 (14.98 - 35.46)</td>
-      <td>21.24 (13.63 - 28.85)</td>
+      <td>24.18 (14.99 - 33.37)</td>
+      <td>27.01 (15.45 - 38.57)</td>
+      <td>27.11 (16.03 - 38.18)</td>
+      <td>24.9 (15.13 - 34.67)</td>
+      <td>21.09 (13.84 - 28.35)</td>
     </tr>
     <tr>
       <th>1</th>
       <td>RKIsurv2-arima</td>
-      <td>27.05 (24.58 - 29.51)</td>
-      <td>25.84 (22.77 - 28.9)</td>
-      <td>26.25 (23.39 - 29.11)</td>
-      <td>29.73 (27.56 - 31.89)</td>
-      <td>28.04 (26.22 - 29.85)</td>
+      <td>26.83 (24.54 - 29.12)</td>
+      <td>25.48 (22.66 - 28.31)</td>
+      <td>25.85 (23.23 - 28.47)</td>
+      <td>29.55 (27.58 - 31.53)</td>
+      <td>28.17 (26.52 - 29.82)</td>
     </tr>
     <tr>
       <th>2</th>
       <td>RKIsurv2-etsAAA</td>
-      <td>34.04 (31.27 - 36.81)</td>
-      <td>30.19 (26.94 - 33.43)</td>
-      <td>31.43 (27.83 - 35.04)</td>
-      <td>39.34 (37.07 - 41.61)</td>
-      <td>37.84 (35.94 - 39.73)</td>
+      <td>33.87 (31.27 - 36.46)</td>
+      <td>29.94 (26.95 - 32.94)</td>
+      <td>30.95 (27.65 - 34.26)</td>
+      <td>39.24 (37.15 - 41.33)</td>
+      <td>37.97 (36.25 - 39.69)</td>
     </tr>
     <tr>
       <th>3</th>
       <td>RKIsurv2-etsAAN</td>
-      <td>40.88 (38.09 - 43.67)</td>
-      <td>39.25 (36.01 - 42.48)</td>
-      <td>38.16 (34.9 - 41.42)</td>
-      <td>44.43 (42.06 - 46.8)</td>
-      <td>44.88 (43.13 - 46.63)</td>
+      <td>40.73 (38.1 - 43.36)</td>
+      <td>38.99 (35.97 - 42.01)</td>
+      <td>37.81 (34.82 - 40.81)</td>
+      <td>44.26 (42.07 - 46.45)</td>
+      <td>45.01 (43.41 - 46.61)</td>
     </tr>
     <tr>
       <th>4</th>
       <td>RKIsurv2-etsANN</td>
-      <td>20.33 (17.87 - 22.79)</td>
-      <td>20.25 (17.09 - 23.4)</td>
-      <td>20.39 (17.27 - 23.52)</td>
-      <td>21.68 (19.55 - 23.8)</td>
-      <td>19.98 (18.13 - 21.84)</td>
+      <td>20.14 (17.87 - 22.41)</td>
+      <td>19.91 (17.02 - 22.81)</td>
+      <td>20.04 (17.19 - 22.89)</td>
+      <td>21.5 (19.57 - 23.44)</td>
+      <td>20.22 (18.53 - 21.91)</td>
     </tr>
   </tbody>
 </table>
@@ -15117,7 +15117,7 @@ body {font-family: Arial;}
 <div class="jp-OutputArea-child">
 
 <div class="jp-RenderedHTMLCommon jp-RenderedHTML jp-OutputArea-output " data-mime-type="text/html">
-<div class="tabgroup"><div class="tab"><button class="tablinks active" onclick="openTab(event)">RKIsurv2-etsANN</button><button class="tablinks" onclick="openTab(event)">HHI-ConnstantSpreadTest</button><button class="tablinks" onclick="openTab(event)">RKIsurv2-etsAAN</button><button class="tablinks" onclick="openTab(event)">HHI-GRUEncDec</button><button class="tablinks" onclick="openTab(event)">HPI-baseMpnnLstm</button><button class="tablinks" onclick="openTab(event)">RKIsurv2-etsAAA</button><button class="tablinks" onclick="openTab(event)">HPI-decomp1</button></div><div id="RKIsurv2-etsANN" class="tabcontent" style="display:block;"><img src="./figures/baseline_RKIsurv2-etsANN.png" alt="weighted interval score comparison RKIsurv2-etsANN" /></div><div id="HHI-ConnstantSpreadTest" class="tabcontent"><img src="./figures/baseline_HHI-ConnstantSpreadTest.png" alt="weighted interval score comparison HHI-ConnstantSpreadTest" /></div><div id="RKIsurv2-etsAAN" class="tabcontent"><img src="./figures/baseline_RKIsurv2-etsAAN.png" alt="weighted interval score comparison RKIsurv2-etsAAN" /></div><div id="HHI-GRUEncDec" class="tabcontent"><img src="./figures/baseline_HHI-GRUEncDec.png" alt="weighted interval score comparison HHI-GRUEncDec" /></div><div id="HPI-baseMpnnLstm" class="tabcontent"><img src="./figures/baseline_HPI-baseMpnnLstm.png" alt="weighted interval score comparison HPI-baseMpnnLstm" /></div><div id="RKIsurv2-etsAAA" class="tabcontent"><img src="./figures/baseline_RKIsurv2-etsAAA.png" alt="weighted interval score comparison RKIsurv2-etsAAA" /></div><div id="HPI-decomp1" class="tabcontent"><img src="./figures/baseline_HPI-decomp1.png" alt="weighted interval score comparison HPI-decomp1" /></div></div>
+<div class="tabgroup"><div class="tab"><button class="tablinks active" onclick="openTab(event)">RKIsurv2-etsANN</button><button class="tablinks" onclick="openTab(event)">HPI-decomp1</button><button class="tablinks" onclick="openTab(event)">RKIsurv2-etsAAA</button><button class="tablinks" onclick="openTab(event)">HHI-ConnstantSpreadTest</button><button class="tablinks" onclick="openTab(event)">RKIsurv2-etsAAN</button><button class="tablinks" onclick="openTab(event)">HPI-baseMpnnLstm</button><button class="tablinks" onclick="openTab(event)">HHI-GRUEncDec</button></div><div id="RKIsurv2-etsANN" class="tabcontent" style="display:block;"><img src="./docs/figures/baseline_RKIsurv2-etsANN.png" alt="weighted interval score comparison RKIsurv2-etsANN" /></div><div id="HPI-decomp1" class="tabcontent"><img src="./docs/figures/baseline_HPI-decomp1.png" alt="weighted interval score comparison HPI-decomp1" /></div><div id="RKIsurv2-etsAAA" class="tabcontent"><img src="./docs/figures/baseline_RKIsurv2-etsAAA.png" alt="weighted interval score comparison RKIsurv2-etsAAA" /></div><div id="HHI-ConnstantSpreadTest" class="tabcontent"><img src="./docs/figures/baseline_HHI-ConnstantSpreadTest.png" alt="weighted interval score comparison HHI-ConnstantSpreadTest" /></div><div id="RKIsurv2-etsAAN" class="tabcontent"><img src="./docs/figures/baseline_RKIsurv2-etsAAN.png" alt="weighted interval score comparison RKIsurv2-etsAAN" /></div><div id="HPI-baseMpnnLstm" class="tabcontent"><img src="./docs/figures/baseline_HPI-baseMpnnLstm.png" alt="weighted interval score comparison HPI-baseMpnnLstm" /></div><div id="HHI-GRUEncDec" class="tabcontent"><img src="./docs/figures/baseline_HHI-GRUEncDec.png" alt="weighted interval score comparison HHI-GRUEncDec" /></div></div>
 </div>
 
 </div>
@@ -15163,7 +15163,7 @@ body {font-family: Arial;}
 <div class="jp-OutputArea-child">
 
 <div class="jp-RenderedHTMLCommon jp-RenderedHTML jp-OutputArea-output " data-mime-type="text/html">
-<div class="tabgroup"><div class="tab"><button class="tablinks active" onclick="openTab(event)">2023</button><button class="tablinks" onclick="openTab(event)">2022</button><button class="tablinks" onclick="openTab(event)">2021</button></div><div id="2023" class="tabcontent" style="display:block;"><img src="figures/wis_composition_23.png" alt="Weighted interval score composition 2023"/></div><div id="2022" class="tabcontent"><img src="figures/wis_composition_22.png" alt="Weighted interval score composition 2022"/></div><div id="2021" class="tabcontent"><img src="figures/wis_composition_21.png" alt="Weighted interval score composition 2021"/></div></div>
+<div class="tabgroup"><div class="tab"><button class="tablinks active" onclick="openTab(event)">2023</button><button class="tablinks" onclick="openTab(event)">2022</button><button class="tablinks" onclick="openTab(event)">2021</button></div><div id="2023" class="tabcontent" style="display:block;"><img src="docs/figures/wis_composition_23.png" alt="Weighted interval score composition 2023"/></div><div id="2022" class="tabcontent"><img src="docs/figures/wis_composition_22.png" alt="Weighted interval score composition 2022"/></div><div id="2021" class="tabcontent"><img src="docs/figures/wis_composition_21.png" alt="Weighted interval score composition 2021"/></div></div>
 </div>
 
 </div>
@@ -15201,6 +15201,15 @@ body {font-family: Arial;}
 </div>
 
 <div class="jp-OutputArea jp-Cell-outputArea">
+<div class="jp-OutputArea-child">
+<div class="jp-RenderedText jp-OutputArea-output" data-mime-type="application/vnd.jupyter.stderr">
+<pre>/home/runner/work/forecast-competition/forecast-competition/scripts/generate_report.py:67: RuntimeWarning: Mean of empty slice
+  mean_log = np.nanmean(log_matrix, axis=axis)
+/home/runner/work/forecast-competition/forecast-competition/scripts/generate_report.py:67: RuntimeWarning: Mean of empty slice
+  mean_log = np.nanmean(log_matrix, axis=axis)
+</pre>
+</div>
+</div>
 <div class="jp-OutputArea-child jp-OutputArea-executeResult">
 
 <div class="jp-RenderedHTMLCommon jp-RenderedHTML jp-OutputArea-output jp-OutputArea-executeResult" data-mime-type="text/html">
@@ -15233,102 +15242,102 @@ body {font-family: Arial;}
   <tbody>
     <tr>
       <th>0</th>
-      <td>RKIsurv2-arima</td>
-      <td>118</td>
-      <td>1.000000</td>
-      <td>1.000000</td>
-      <td>0.670682</td>
-      <td>0.856639</td>
-    </tr>
-    <tr>
-      <th>1</th>
-      <td>RKIsurv2-etsANN</td>
-      <td>118</td>
-      <td>0.832179</td>
-      <td>0.759320</td>
-      <td>0.628895</td>
-      <td>0.804069</td>
-    </tr>
-    <tr>
-      <th>2</th>
-      <td>RKIsurv2-etsAAN</td>
-      <td>118</td>
-      <td>1.447048</td>
-      <td>1.472455</td>
-      <td>0.685933</td>
-      <td>0.863117</td>
-    </tr>
-    <tr>
-      <th>3</th>
-      <td>RKIsurv2-etsAAA</td>
-      <td>118</td>
-      <td>1.258189</td>
-      <td>1.261558</td>
-      <td>0.675418</td>
-      <td>0.858378</td>
-    </tr>
-    <tr>
-      <th>4</th>
-      <td>HHI-GRUEncDec</td>
-      <td>98</td>
-      <td>2.290250</td>
-      <td>0.974822</td>
-      <td>0.001720</td>
-      <td>0.003174</td>
-    </tr>
-    <tr>
-      <th>5</th>
-      <td>HHI-seq2seq4096d14</td>
-      <td>1</td>
-      <td>7.895165</td>
-      <td>7.172288</td>
-      <td>0.000000</td>
-      <td>0.000000</td>
-    </tr>
-    <tr>
-      <th>6</th>
-      <td>HHI-seq2seq4096d28</td>
-      <td>1</td>
-      <td>7.946467</td>
-      <td>7.114494</td>
-      <td>0.000000</td>
-      <td>0.000000</td>
-    </tr>
-    <tr>
-      <th>7</th>
       <td>HHI-ConnstantSpreadTest</td>
       <td>1</td>
-      <td>0.718878</td>
-      <td>0.181011</td>
+      <td>0.689031</td>
+      <td>0.185377</td>
       <td>0.079663</td>
       <td>0.080021</td>
     </tr>
     <tr>
-      <th>8</th>
-      <td>HHI-seq2seq4096d21</td>
+      <th>1</th>
+      <td>HHI-GRUEncDec</td>
+      <td>113</td>
+      <td>2.234000</td>
+      <td>0.950129</td>
+      <td>0.001749</td>
+      <td>0.003225</td>
+    </tr>
+    <tr>
+      <th>2</th>
+      <td>HHI-seq2seq4096d14</td>
       <td>1</td>
-      <td>7.949106</td>
-      <td>7.124463</td>
+      <td>7.934966</td>
+      <td>7.071758</td>
       <td>0.000000</td>
       <td>0.000000</td>
     </tr>
     <tr>
-      <th>9</th>
+      <th>3</th>
+      <td>HHI-seq2seq4096d21</td>
+      <td>1</td>
+      <td>7.989216</td>
+      <td>7.024647</td>
+      <td>0.000000</td>
+      <td>0.000000</td>
+    </tr>
+    <tr>
+      <th>4</th>
+      <td>HHI-seq2seq4096d28</td>
+      <td>1</td>
+      <td>7.986550</td>
+      <td>7.014901</td>
+      <td>0.000000</td>
+      <td>0.000000</td>
+    </tr>
+    <tr>
+      <th>5</th>
       <td>HPI-baseMpnnLstm</td>
       <td>15</td>
-      <td>0.512952</td>
-      <td>0.558373</td>
+      <td>0.504079</td>
+      <td>0.515470</td>
       <td>0.285309</td>
       <td>0.635565</td>
     </tr>
     <tr>
-      <th>10</th>
+      <th>6</th>
       <td>HPI-decomp1</td>
       <td>21</td>
-      <td>1.867493</td>
-      <td>1.201473</td>
+      <td>1.853558</td>
+      <td>1.209511</td>
       <td>0.136381</td>
       <td>0.304337</td>
+    </tr>
+    <tr>
+      <th>7</th>
+      <td>RKIsurv2-arima</td>
+      <td>123</td>
+      <td>1.000000</td>
+      <td>1.000000</td>
+      <td>0.670636</td>
+      <td>0.856619</td>
+    </tr>
+    <tr>
+      <th>8</th>
+      <td>RKIsurv2-etsAAA</td>
+      <td>123</td>
+      <td>1.265060</td>
+      <td>1.270699</td>
+      <td>0.675374</td>
+      <td>0.858358</td>
+    </tr>
+    <tr>
+      <th>9</th>
+      <td>RKIsurv2-etsAAN</td>
+      <td>123</td>
+      <td>1.460873</td>
+      <td>1.496766</td>
+      <td>0.685876</td>
+      <td>0.863098</td>
+    </tr>
+    <tr>
+      <th>10</th>
+      <td>RKIsurv2-etsANN</td>
+      <td>123</td>
+      <td>0.824922</td>
+      <td>0.752342</td>
+      <td>0.628793</td>
+      <td>0.804039</td>
     </tr>
   </tbody>
 </table>
@@ -15352,7 +15361,52 @@ body {font-family: Arial;}
 </div>
 </div>
 </div>
-</div><div class="jp-Cell jp-CodeCell jp-Notebook-cell jp-mod-noOutputs jp-mod-noInput ">
+</div><div class="jp-Cell jp-CodeCell jp-Notebook-cell  jp-mod-noInput ">
+
+<div class="jp-Cell-outputWrapper">
+<div class="jp-Collapser jp-OutputCollapser jp-Cell-outputCollapser">
+</div>
+
+<div class="jp-OutputArea jp-Cell-outputArea">
+<div class="jp-OutputArea-child">
+<div class="jp-RenderedText jp-OutputArea-output" data-mime-type="application/vnd.jupyter.stderr">
+<pre>/home/runner/work/forecast-competition/forecast-competition/scripts/generate_report.py:67: RuntimeWarning: Mean of empty slice
+  mean_log = np.nanmean(log_matrix, axis=axis)
+/home/runner/work/forecast-competition/forecast-competition/scripts/generate_report.py:67: RuntimeWarning: Mean of empty slice
+  mean_log = np.nanmean(log_matrix, axis=axis)
+/home/runner/work/forecast-competition/forecast-competition/scripts/generate_report.py:67: RuntimeWarning: Mean of empty slice
+  mean_log = np.nanmean(log_matrix, axis=axis)
+/home/runner/work/forecast-competition/forecast-competition/scripts/generate_report.py:67: RuntimeWarning: Mean of empty slice
+  mean_log = np.nanmean(log_matrix, axis=axis)
+/home/runner/work/forecast-competition/forecast-competition/scripts/generate_report.py:67: RuntimeWarning: Mean of empty slice
+  mean_log = np.nanmean(log_matrix, axis=axis)
+/home/runner/work/forecast-competition/forecast-competition/scripts/generate_report.py:67: RuntimeWarning: Mean of empty slice
+  mean_log = np.nanmean(log_matrix, axis=axis)
+/home/runner/work/forecast-competition/forecast-competition/scripts/generate_report.py:67: RuntimeWarning: Mean of empty slice
+  mean_log = np.nanmean(log_matrix, axis=axis)
+/home/runner/work/forecast-competition/forecast-competition/scripts/generate_report.py:67: RuntimeWarning: Mean of empty slice
+  mean_log = np.nanmean(log_matrix, axis=axis)
+/home/runner/work/forecast-competition/forecast-competition/scripts/generate_report.py:67: RuntimeWarning: Mean of empty slice
+  mean_log = np.nanmean(log_matrix, axis=axis)
+/home/runner/work/forecast-competition/forecast-competition/scripts/generate_report.py:67: RuntimeWarning: Mean of empty slice
+  mean_log = np.nanmean(log_matrix, axis=axis)
+/home/runner/work/forecast-competition/forecast-competition/scripts/generate_report.py:67: RuntimeWarning: Mean of empty slice
+  mean_log = np.nanmean(log_matrix, axis=axis)
+/home/runner/work/forecast-competition/forecast-competition/scripts/generate_report.py:67: RuntimeWarning: Mean of empty slice
+  mean_log = np.nanmean(log_matrix, axis=axis)
+/home/runner/work/forecast-competition/forecast-competition/scripts/generate_report.py:67: RuntimeWarning: Mean of empty slice
+  mean_log = np.nanmean(log_matrix, axis=axis)
+/home/runner/work/forecast-competition/forecast-competition/scripts/generate_report.py:67: RuntimeWarning: Mean of empty slice
+  mean_log = np.nanmean(log_matrix, axis=axis)
+/home/runner/work/forecast-competition/forecast-competition/scripts/generate_report.py:67: RuntimeWarning: Mean of empty slice
+  mean_log = np.nanmean(log_matrix, axis=axis)
+</pre>
+</div>
+</div>
+
+</div>
+
+</div>
 
 </div>
 <div class="jp-Cell jp-MarkdownCell jp-Notebook-cell">
@@ -15360,7 +15414,7 @@ body {font-family: Arial;}
 <div class="jp-Collapser jp-InputCollapser jp-Cell-inputCollapser">
 </div>
 <div class="jp-InputArea jp-Cell-inputArea"><div class="jp-RenderedHTMLCommon jp-RenderedMarkdown jp-MarkdownOutput " data-mime-type="text/markdown">
-<p><img src="./figures/regional_heatmap.png" alt="Heatmap of relative WIS over regions and models" /></p>
+<p><img src="./docs/figures/regional_heatmap.png" alt="Heatmap of relative WIS over regions and models" /></p>
 
 </div>
 </div>
@@ -15384,7 +15438,7 @@ body {font-family: Arial;}
 <div class="jp-Collapser jp-InputCollapser jp-Cell-inputCollapser">
 </div>
 <div class="jp-InputArea jp-Cell-inputArea"><div class="jp-RenderedHTMLCommon jp-RenderedMarkdown jp-MarkdownOutput " data-mime-type="text/markdown">
-<p><img src="./figures/coverage.png" alt="Coverage probabilities per model" /></p>
+<p><img src="./docs/figures/coverage.png" alt="Coverage probabilities per model" /></p>
 
 </div>
 </div>
