@@ -46,12 +46,70 @@ def geometric_mean(arr):
     """ Caclulate geometric mean of input array """
     assert isinstance(arr, list) or isinstance(arr, np.ndarray)
 
-    return np.prod(arr) ** (1 / len(arr))
+    return np.exp(np.log(arr).mean())  # overflow-proof
+
+
+def geometric_mean(arr, axis=None):
+    """
+    Compute the geometric mean along the specified axis of a matrix. This is an overflow-proof implementation compared
+    to np.prod(arr)**(1/len(arr)). Makes use of logarithmic rules.
+    Parameters:
+    - arr: numpy array
+        The input matrix or vector.
+    - axis: int or tuple of ints, optional
+        Axis or axes along which the geometric mean is computed. Default is None,
+        which means the geometric mean is computed over all elements of the matrix.
+    Returns:
+    - numpy array
+        Geometric mean along the specified axis.
+    """
+    log_matrix = np.log(arr)
+    mean_log = np.nanmean(log_matrix, axis=axis)
+    return np.exp(mean_log)
 
 
 def relative_score(df, metric_column, baseline="RKIsurv2-arima"):
     """
-    # TODO improve docstring
+    Calculate the relative scores of each model with respect to a specified baseline.
+
+    Parameters:
+    - df (pd.DataFrame): The input DataFrame containing model predictions and relevant information.
+    - metric_column (str): The column in the DataFrame representing the performance metric.
+    - baseline (str, optional): The baseline model against which the relative scores are calculated.
+                                Default is "RKIsurv2-arima".
+
+    Returns:
+    dict:
+        A dictionary containing the relative scores of each model with respect to the specified baseline.
+        The keys are model names, and the values are the corresponding relative scores.
+
+    Raises:
+    - AssertionError: If the specified baseline model or metric column is not found in the DataFrame.
+
+    The function computes relative scores by comparing each model's performance against the baseline model.
+    It uses a geometric mean approach to aggregate the pairwise ratios for each reference date.
+
+    Example:
+    ```python
+    import pandas as pd
+
+    # Sample usage
+    data = {
+        'refdate': ['2022-01-01', '2022-01-01', '2022-01-02', '2022-01-02'],
+        'model': ['ModelA', 'ModelB', 'ModelA', 'ModelB'],
+        'target': [1, 2, 1, 2],
+        'location': ['CityX', 'CityY', 'CityX', 'CityY'],
+        'metric': [0.8, 0.9, 1.2, 1.1]
+    }
+
+    df = pd.DataFrame(data)
+    result = relative_score(df, metric_column='metric', baseline='ModelA')
+    ```
+
+    Note: The function assumes that the DataFrame structure follows the specified format with columns 'refdate', 'model',
+    'target', 'location', and the specified metric_column.
+    This implementation makes as much use of vectorization as possible. It is much faster than an analogeous
+    implementation based on iterations, i.e.
     for refdate in df
         for team.model in df
             for team-model in df
@@ -63,85 +121,95 @@ def relative_score(df, metric_column, baseline="RKIsurv2-arima"):
     # do pairwise comparison
     # scale by baseline
     models = df["model"].unique().tolist()
-    refdates = df["refdate"].unique()
 
     assert baseline in models, "Please specify a different baseline model!"
     assert metric_column in list(df.columns), f"Please specify a different metric!"
 
-    # put baseline in first position
-    idx_first, idx_baseline = 0, models.index(baseline)
-    models[idx_first], models[idx_baseline] = models[idx_baseline], models[idx_first]
+    merge_columns = ["refdate", "target", "location"]
 
-    thetas = {m: [] for m in models}
-    for rd in refdates:
+    # outer join does the trick
+    df = df.drop_duplicates()
+    df_merged = df.copy()[["model"] + merge_columns + [metric_column]]
+    for m in models:
+        df_merged = pd.merge(df_merged, df[df.model == m][merge_columns + [metric_column]],
+                             on=merge_columns, how="outer", suffixes=(None, f"_{m}"))
+        # no duplicates to be deleted here
 
-        model_rows = dict()
-        for m_a in models:
+    # care for 'diagonal', set values of own model to nan
+    for model in models:
+        df_merged.loc[df_merged.model == model, f"{metric_column}_{model}"] = np.nan
 
-            if model_rows.get(m_a) is None:
-                model_rows[m_a] = (df["refdate"] == rd) & (df["model"] == m_a)
+    # most inner loop of OG function
+    per_refdate_model = df_merged.groupby(["refdate", "model"]).mean()
 
-            if not any(model_rows[m_a]):
-                if m_a == baseline:  # with no baseline, we cannot scale
-                    break
-                else:
-                    continue
+    index_metric_column = per_refdate_model.columns.tolist().index(metric_column)
+    per_refdate_model.iloc[:, index_metric_column+1:] = per_refdate_model.iloc[:, index_metric_column].values[:, np.newaxis] / per_refdate_model.iloc[:, index_metric_column+1:].values
+    # calculate geometric mean
+    per_refdate_model["theta"] = geometric_mean(per_refdate_model.iloc[:, index_metric_column+1:].values, axis=1)
 
-            thetas_a = []
-            for m_b in models:
-                if m_b == m_a:
-                    continue
+    # scale by baseline
+    for refdate in per_refdate_model.index.get_level_values('refdate').unique():
+        try:
+            baseline_value = per_refdate_model.loc[(refdate, baseline), "theta"]
+        except KeyError:
+            per_refdate_model.loc[refdate, "theta"] = np.nan
+            continue  # no baseline for this refdate!
+        per_refdate_model.loc[refdate, "theta"] = (per_refdate_model.loc[refdate, "theta"] / baseline_value).values
 
-                if model_rows.get(m_b) is None:
-                    model_rows[m_b] = (df["refdate"] == rd) & (df["model"] == m_b)
+    theta_per_model = per_refdate_model.reset_index().groupby(["model"]).theta.mean()
 
-                if any(model_rows[m_b]):
-                    # account for pair-wise overlap of target, location
-                    loc_intersect = set(df.loc[model_rows[m_a], "location"]).intersection(
-                        set(df.loc[model_rows[m_b], "location"]))
-
-                    target_intersect = set(df.loc[model_rows[m_a], "target"]).intersection(
-                        set(df.loc[model_rows[m_b], "target"]))
-                    # here we assume that each model predicts the all combinations of location & target
-                    # (not necessarily true)
-                    a_mean = df.loc[model_rows[m_a] &
-                                    (df["location"].isin(loc_intersect)) &
-                                    (df["target"].isin(target_intersect)), metric_column].mean()
-                    b_mean = df.loc[model_rows[m_b] &
-                                    (df["location"].isin(loc_intersect)) &
-                                    (df["target"].isin(target_intersect)), metric_column].mean()
-                    thetas_a.append(a_mean/b_mean)
-
-            if not len(thetas_a):
-                continue  # there was not one model matching levels
-
-            theta = geometric_mean(thetas_a)
-
-            if m_a == baseline:
-                theta_baseline = theta
-                theta = 1.0
-            else:
-                theta = theta / theta_baseline  # scale
-
-            thetas[m_a].append(theta)
-
-    return thetas
+    return theta_per_model.to_dict()
 
 
 def generate_spatial_matrix(df, bl_map, metric_col="wis"):
-    # TODO create docstring
+    """
+    Generate a spatial matrix based on relative scores for each model in a given DataFrame.
 
+    Parameters:
+    - df (pd.DataFrame): The DataFrame containing model evaluation results and location information.
+    - bl_map (dict): A dictionary mapping baseline locations to lists of associated locations for spatial comparison.
+    - metric_col (str, optional): The column in the DataFrame representing the performance metric.
+                                  Default is "wis".
+
+    Returns:
+    pd.DataFrame:
+        A spatial matrix where rows correspond to baseline locations, columns correspond to models, and the values
+        represent relative scores for the specified metric.
+
+    The function computes relative scores for the specified metric for each model across locations defined by the
+    baseline mapping. The resulting spatial matrix provides a comprehensive overview of model performance in different
+    geographical areas.
+
+    Example:
+    ```python
+    import pandas as pd
+
+    # Sample usage
+    data = {
+        'model': ['ModelA', 'ModelB', 'ModelA', 'ModelB'],
+        'location': ['CityX', 'CityY', 'CityX', 'CityY'],
+        'wis': [0.8, 0.9, 1.2, 1.1]
+        # Add other necessary columns as per your actual DataFrame structure
+    }
+
+    baseline_map = {'CityX': ['CityY', 'CityZ'], 'CityY': ['CityX', 'CityZ']}
+    df_results = pd.DataFrame(data)
+    spatial_matrix = generate_spatial_matrix(df_results, baseline_map)
+    ```
+
+    Note: The function assumes that the input DataFrame structure follows the specified format with columns like
+    'model', 'location', and the specified metric_col.
+    """
     models = df.model.unique().tolist()
     mat = np.full([len(bl_map), len(models)], np.nan)
 
     for i, tup in enumerate(bl_map.items()):
         bl, lks = tup
-        per_model = relative_score(df[(df.location.isin(lks))], metric_col)
-        # returned dict does not contain all models!
-        for model, values in per_model.items():
-            if len(values):
-                col_idx = models.index(model)
-                mat[i, col_idx] = np.nanmean(values)  # list of values for different reference dates
+        rel_score_per_model = relative_score(df[(df.location.isin(lks))], metric_col)
+
+        for model, rel_score in rel_score_per_model.items():
+            col_idx = models.index(model)
+            mat[i, col_idx] = rel_score
 
     empty_columns = np.where(np.all(np.isnan(mat), axis=0))[0].tolist()
     df = pd.DataFrame(mat, columns=models, index=list(bl_map.keys()))
@@ -344,16 +412,51 @@ def create_figures_baseline_comparison(df: pd.DataFrame, baseline: Optional[str]
 
 def create_table3(df_results):
     """
-    TODO document
+    Create a summary table (Table 3) based on the input DataFrame containing model evaluation results.
+
+    Parameters:
+    - df_results (pd.DataFrame): The DataFrame containing model evaluation results, including columns such as
+      'model', 'refdate', 'wis', 'mae', and other necessary information.
+
+    Returns:
+    pd.DataFrame:
+        A summary table (Table 3) with columns representing model names, number of submissions, relative scores
+        for WIS and MAE, and coverage probabilities at 50% and 95%.
+
+    The function internally calls the following helper functions:
+    - relative_score: Computes relative scores for WIS and MAE against a predefined baseline model.
+    - coverage_probability: Calculates coverage probabilities at specified confidence levels (50% and 95%).
+
+    Example:
+    ```python
+    import pandas as pd
+
+    # Sample usage
+    data = {
+        'refdate': ['2022-01-01', '2022-01-01', '2022-01-02', '2022-01-02'],
+        'model': ['ModelA', 'ModelB', 'ModelA', 'ModelB'],
+        'wis': [0.8, 0.9, 1.2, 1.1],
+        'mae': [0.5, 0.6, 0.8, 0.7]
+        # Add other necessary columns as per your actual DataFrame structure
+    }
+
+    df_results = pd.DataFrame(data)
+    result_table = create_table3(df_results)
+    ```
+
+    Note: The function assumes that the input DataFrame structure follows the specified format with columns like
+    'refdate', 'model', 'wis', 'mae', and any other required columns for computation.
     """
     rel_wis = relative_score(df_results, "wis")
     rel_mae = relative_score(df_results, "mae")
     cov50 = coverage_probability(df_results, 0.5)
     cov95 = coverage_probability(df_results, 0.05)
+    # calculate submissions per model
+    n_submissions = df_results.groupby('model').refdate.agg(lambda x: len(pd.unique(x))).to_dict()
 
     tab3 = []
-    for key, values in rel_wis.items():
-        row = [key, len(values), np.array(values).mean(), np.array(rel_mae[key]).mean(), cov50[key], cov95[key]]
+    for model in rel_wis.keys():
+        row = [model, n_submissions[model], rel_wis[model], rel_mae[model], cov50[model], cov95[model]]
         tab3.append(row)
 
     return pd.DataFrame(tab3, columns=["model", "n", "rel_wis", "rel_mae", "50% coverage", "95% coverage"])
