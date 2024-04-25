@@ -25,11 +25,10 @@ class Submission:
     df: pd.DataFrame
 
 
-def check_format(df_gt, submission):
+def check_format(submission):
     """
     Verify that submitted prediction is of the required format.
     inputs:
-    df_gt: ground truth pandas DataFrame
     submission: Submission object including filepath and loaded DataFrame
     return: bool, whether or not format requirements are met
     """
@@ -50,8 +49,6 @@ def check_format(df_gt, submission):
     # check that value is either int or float, depending on variable type
     if not isinstance(pred.value[0], np.floating) or not isinstance(pred.value[0], np.integer):
         pred.value = pred.value.astype(np.float32)  # try to convert, if not possible throws exception
-
-    # TODO check that location are present in gt file
 
     # TODO check that each combintation of target & location has all realizations of sample_id
         
@@ -165,7 +162,7 @@ if __name__ == "__main__":
         matched = file_pattern.match(f.filename)
         if matched is None:
             sys.exit(f"Exiting automatic pipeline, submitted file did not adhere to naming convenction: {f.filename}")
-        elif utils.date_is_sunday(matched.groups()[1]) and utils.greater_date(matched.groups()[1], "2021-04-11"):
+        elif utils.date_is_sunday(matched.groups()[1]) and utils.greater_date(matched.groups()[1], "2020-01-01"):
 
             submissions.append(Submission(f.filename, matched.groups()[0], matched.groups()[2], matched.groups()[1],
                                           matched.groups()[3], matched.groups()[4], pd.DataFrame()))
@@ -175,17 +172,12 @@ if __name__ == "__main__":
         print("Submission files adhere to naming convention")
 
     for s in submissions:
-        print(s.filepath)
-        # open groundtruth file that matches
-        gt = pd.read_csv(f"challenge-data/evaluation/2022-09-15_{s.location_type}_{s.target_type}.csv",
-                         sep=",", decimal=".", header=0)
-
         # for security reasons working on pr base branch, need to download file contents from merged branch here
         # https://github.com/orgs/community/discussions/25961
         s.df = load_submission_data(pr, s.filepath)  # parent dir holds submissions folder
 
         # check format requirements here
-        if not check_format(gt, s):
+        if not check_format(s):
             sys.exit("Exiting CI pipeline, at least one submission file is not of required format")
     else:
         # add automerge label to PR as no further checks are needed
