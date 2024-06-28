@@ -5,10 +5,11 @@ import numpy as np
 import requests
 import os
 import zipfile
-from datetime import datetime
+from datetime import datetime, timedelta
 import shutil
 import re
 import glob
+import warnings
 from typing import Tuple
 from math import ceil
 
@@ -136,82 +137,261 @@ def reset_results_file(fpath="results.pickle"):
     pickle_results(fpath, empty)
 
 
-def get_opendata(refdate: str) -> pd.DataFrame:
+def get_opendata(refdate: str, location_type="LK", pred_variable="cases") -> pd.DataFrame:
     """
     Retrieve COVID 7-day incidence on German district level for a given reference date.
     Data source is RKI OpenData repository:
-    https://github.com/robert-koch-institut/COVID-19_7-Tage-Inzidenz_in_Deutschland
+    https://media.githubusercontent.com/media/robert-koch-institut/SARS-CoV-2-Infektionen_in_Deutschland
+    Source of population data:
+    https://github.com/robert-koch-institut/SARS-CoV-2-Infektionen_in_Deutschland
     """
-    # assert refdate is yyyy-mm-dd
-    assert len(refdate) == 10 and refdate[4] == '-' and refdate[7] == '-', "refdate should be in the format yyyy-mm-dd"
+    assert location_type in ["LK", "BL"]
+    assert pred_variable in ["cases", "rvalue"]
+
+    raw_case_data = get_data_from_day(refdate, clean_up=True)
+    preprocessed = preprocess_raw_data(raw_case_data)
+
+    # calculate 7-day incidences on LK or BL level (needs population data)
+    incidences = calc_incidences(preprocessed, location_type)
+
+    if pred_variable == "rvalue":
+        rvalues = calc_rvalues(incidences, region_type=location_type)
+        df_conform = df_to_competition_format(rvalues, value_column="rvalue")
+    else:
+        df_conform = df_to_competition_format(incidences)
+
+    return df_conform
+
+
+def download_file(url, local_filename):
+    with requests.get(url, stream=True) as r:
+        r.raise_for_status()
+        with open(local_filename, 'wb') as f:
+            shutil.copyfileobj(r.raw, f)
+    if not os.path.isfile(local_filename):
+        return False
+    if os.path.getsize(local_filename) > 0:
+        return True
+    else:
+        os.remove(local_filename)
+        return False
+
+
+def create_url_filename(date):
+    file_url = f"https://media.githubusercontent.com/media/robert-koch-institut/SARS-CoV-2-Infektionen_in_Deutschland/{date}/Aktuell_Deutschland_SarsCov2_Infektionen.csv?download=true"
+    filename = f"raw_data_{date}.csv"
+    return file_url, filename
+
+
+class DownloadError(Exception):
+    pass
+
+
+def download_data_with_retries(initial_date, min_date, retries=10, retry_direction="backward"):
+    assert retry_direction in ["backward", "forward"]
+    # there might not be a release for the requested date, try previous or later days, up to retries if possible
+    if retry_direction == "backward":
+        fromdate = np.max([np.datetime64(initial_date) - np.timedelta64(retries, "D"), np.datetime64(min_date)])
+        try_dates = np.arange(fromdate, initial_date,
+                              dtype='datetime64[D]').tolist()[::-1]
+    else:
+        todate = np.min([np.datetime64(initial_date) + np.timedelta64(retries, "D"), np.datetime64('today')])
+        try_dates = np.arange(initial_date, todate,
+                              dtype='datetime64[D]').tolist()
+
+    for date in try_dates:
+        file_url, filename = create_url_filename(str(date))
+        try:
+
+            success = download_file(file_url, filename)
+            if success:
+                return filename
+        except requests.exceptions.HTTPError:
+            print(f"not able to download data for {str(date)}")
+            continue
+    else:
+        raise DownloadError(
+            f"After {retries} retries, there was no success downloading data from the OpenDataRepository")
+
+
+def get_data_from_day(refdate, clean_up=True):
+    # validate refdate
+    assert len(refdate) == 10 and refdate[4] == '-' and refdate[7] == '-', \
+        "refdate should be in the format yyyy-mm-dd"
     # assert refdate is valid date. i.e. not 2022-09-35
     try:
         datetime.strptime(refdate, '%Y-%m-%d')
     except ValueError:
         raise ValueError("refdate is not a valid date")
 
-    refdate_min = '2022-09-30'  # oldest available release
-    assert datetime.strptime(refdate, '%Y-%m-%d') >= datetime.strptime(refdate_min, '%Y-%m-%d'),\
-        f"refdate should be greater than or equal to {refdate_min}"
+    refdate_min = '2022-06-07'  # oldest available release
+    retry_direction = "backward"
 
-    success, retries = False, 0
-    while not success or retries == 100:
-        # download data
-        url = f"https://github.com/robert-koch-institut/COVID-19_7-Tage-Inzidenz_in_Deutschland/archive/refs/tags/{refdate}.zip"
-        response = requests.get(url)
-        if response.status_code != 200:
-            print(f"Failed to download data for {refdate}")
-            refdate = str(np.datetime64(refdate) - np.timedelta64(1, "D"))  # try previous day
-            retries += 1
-            # 404: https://codeload.github.com/robert-koch-institut/COVID-19_7-Tage-Inzidenz_in_Deutschland/zip/refs/tags/2022-11-06
-        else:
-            success = True
+    if datetime.strptime(refdate, '%Y-%m-%d') < datetime.strptime(refdate_min, '%Y-%m-%d'):
+        warnings.warn(
+            f"You requested a file from {refdate}. The oldest available release of the data repository is from {refdate_min}." +
+            "This contains all data from the beginning of the pandemic. Continuing with that file...")
+        refdate, refdate_min = refdate_min, str(np.datetime64(refdate_min) + np.timedelta64(10, "D"))
+        retry_direction = "forward"
 
-    # save the zip file
-    filename = f"{refdate}.zip"
-    with open(filename, "wb") as f:
-        f.write(response.content)
+    if datetime.strptime(refdate, '%Y-%m-%d') > datetime.today():
+        warnings.warn(
+            f"You requested a file from the future ({refdate}). Will continue with the most recent file...")
+        refdate = datetime.today().strftime("%Y-%m-%d")
 
-    # unzip the file
-    with zipfile.ZipFile(filename, "r") as zip_ref:
-        zip_ref.extractall()
+    filename = download_data_with_retries(refdate, refdate_min,
+                                          retry_direction=retry_direction)  # add
 
-    # delete the zip file
-    os.remove(filename)
+    df = pd.read_csv(filename)
+    # process data?
 
-    dir_path = f"COVID-19_7-Tage-Inzidenz_in_Deutschland-{refdate}"
-    fname = "COVID-19-Faelle_7-Tage-Inzidenz_Landkreise.csv"
-
-    df = pd.read_csv(os.path.join(dir_path, fname))  # load into memory
-
-    shutil.rmtree(dir_path)  # clean up
-
-    # reformat data
-    # open data columns:
-    #       ['Meldedatum', 'Landkreis_id', 'Bevoelkerung', 'Faelle_gesamt',
-    #        'Faelle_neu', 'Faelle_7-Tage', 'Inzidenz_7-Tage']
-
-    # repo data columns: ['location', 'target', 'value']
-    df_conform = pd.DataFrame(np.zeros([df.shape[0], 3]), columns=['location', 'target', 'value'])
-    df_conform['location'] = df['Landkreis_id']
-    df_conform['target'] = df['Meldedatum'].astype(np.datetime64)  # TODO perhabs keep as str
-    df_conform['value'] = df['Inzidenz_7-Tage'].astype(np.float16)
-    #  recalculate incidence?? do we really need more than 1 decimal? nope!
-
-    return df_conform
+    if clean_up:
+        os.remove(filename)
+    return df
 
 
-def calculate_7day_incidence(df: pd.DataFrame) -> pd.DataFrame:
-    # Sort dataframe by date
-    df = df.sort_values(by='date')
+def preprocess_raw_data(rawdata):
+    # very weird data
+    aggregated = rawdata.groupby(["IdLandkreis", "Meldedatum"]).sum().reset_index()
+    # should automatically account for 5 corrections
+    aggregated = aggregated.loc[:, ["IdLandkreis", "Meldedatum", "AnzahlFall"]]
+    aggregated = zero_expand_df_all_strata(aggregated)
+    return aggregated
 
-    # Compute rolling sum of cases over the last 7 days for each district
-    df['cases_last_7_days'] = df.groupby('district')['cases'].rolling(window=7).sum().reset_index(0, drop=True)
 
-    # Compute 7-day incidence
-    df['7_day_incidence'] = (df['cases_last_7_days'] / df['population_size']) * 100000
+def zero_expand_df_all_strata(df):
+    """
+    Expand a DataFrame to include all combinations of values of date & location,
+    with zero assigned to combinations not present in the original data.
+
+    Parameters:
+    - df: DataFrame: The original DataFrame.
+
+    Returns:
+    - expanded_df: DataFrame: Expanded DataFrame with all combinations of values of date & location.
+    """
+
+    # Get all unique values for each stratum
+    df.Meldedatum = df.Meldedatum.astype(np.datetime64)
+    all_dates = np.arange(df.Meldedatum.min(), df.Meldedatum.max(), dtype='datetime64[D]')
+
+    unique_locations = df.IdLandkreis.unique()
+
+    # Create a DataFrame with all combinations of values for specified strata
+    expanded_df = pd.DataFrame(index=pd.MultiIndex.from_product([all_dates, unique_locations],
+                                                                names=["Meldedatum", "IdLandkreis"])
+                               ).reset_index()
+    expanded_df = expanded_df.sort_values(by=[ "IdLandkreis", "Meldedatum"]).reset_index(drop=True)
+
+    # Merge the original DataFrame with the expanded DataFrame to fill in missing values
+    merged_df = pd.merge(expanded_df, df, on=["Meldedatum", "IdLandkreis"], how='left')
+
+    # Replace NaN values in 'value' column with zero
+    merged_df['AnzahlFall'] = merged_df['AnzahlFall'].fillna(0)
+
+    return merged_df
+
+
+def _get_population_data_lk():
+    url = 'https://raw.githubusercontent.com/robert-koch-institut/COVID-19_7-Tage-Inzidenz_in_Deutschland/2023-04-07/COVID-19-Faelle_7-Tage-Inzidenz_Landkreise.csv'
+    columns = ["Landkreis_id", "Bevoelkerung"]
+    df = pd.read_csv(url)
+    return df.groupby(columns).size().reset_index().loc[:, columns]
+
+
+def _get_population_data_bl():
+    url = 'https://raw.githubusercontent.com/robert-koch-institut/COVID-19_7-Tage-Inzidenz_in_Deutschland/2023-04-07/COVID-19-Faelle_7-Tage-Inzidenz_Bundeslaender.csv'
+    columns = ["Bundesland_id", "Bevoelkerung"]
+    df = pd.read_csv(url)
+    df = df.loc[df.Altersgruppe == "00+", :].reset_index(drop=True)
+    return df.groupby(columns).size().reset_index().loc[:, columns]
+
+
+def get_population_data(region_type="LK"):
+    assert region_type in ["LK", "BL"]
+    if region_type == "LK":
+        return _get_population_data_lk()
+    else:
+        return _get_population_data_bl()
+
+
+def calculate_incidence_from_cases(df, incidence_column="incidence", cases_column="cases",
+                                   population_column="Bevoelkerung", grouping_column=None):
+    df = df.copy()
+    # probably needs to be done on location group
+    if grouping_column is None:
+        df[cases_column] = df.cases_column.shift(periods=1, fill_value=0)
+        df[incidence_column] = (df[cases_column].rolling(window=7).sum() / df[population_column] * 100000).round(2)
+    else:
+        grouped = df.groupby([grouping_column])
+        df[incidence_column] = 0.0
+        case_col_iloc = df.columns.get_loc(cases_column)
+        incidence_col_iloc = df.columns.get_loc(incidence_column)
+        for group_label, group_indices in grouped.groups.items():
+            # shift case column by one row (needs to be group-based)
+            df.iloc[group_indices, case_col_iloc] = \
+                df.iloc[group_indices, case_col_iloc].shift(periods=1, fill_value=0)
+            df.iloc[group_indices, incidence_col_iloc] = \
+                (df.iloc[group_indices, case_col_iloc].rolling(window=7).sum() /
+                 df.iloc[group_indices, df.columns.get_loc(population_column)] * 100000).round(2)
 
     return df
+
+
+def calc_incidences(df, region_type):
+    # calculate 7-day incidence levels using population data
+    assert region_type in ["LK", "BL"]
+
+    pop_data = get_population_data(region_type)
+    # merge population data
+    if region_type == "LK":
+        merged = df.merge(pop_data, left_on="IdLandkreis", right_on="Landkreis_id")
+        region_column = "Landkreis_id"
+    else:
+        # need to aggregate first!
+        region_column = "Bundesland_id"
+        df["Bundesland_id"] = (df["IdLandkreis"] / 1000).astype(np.uint8)
+        df = df.groupby(["Meldedatum", "Bundesland_id"]).sum().reset_index()
+        merged = df.merge(pop_data, on=region_column)
+
+    incidences = calculate_incidence_from_cases(merged, "incidence", cases_column="AnzahlFall",
+                                                population_column="Bevoelkerung",
+                                                grouping_column=region_column)
+
+    return incidences.fillna(0)
+
+
+def calculate_rvalues_from_cases(df, rvalue_column="rvalue", case_column="cases", grouping_column=None):
+    df = df.copy()
+
+    mask = df[case_column] == 0
+    df.loc[mask, case_column] += 1
+
+    # calculate rvalues
+    if grouping_column is None:
+        df[rvalue_column] = df[case_column] / df[case_column].shift(4)
+    else:
+        df[rvalue_column] = df[case_column] / df.groupby(grouping_column).shift(4)[case_column]
+
+    return df.fillna(0)
+
+
+def calc_rvalues(df, case_column="AnzahlFall", region_type="LK"):
+    assert region_type in ["LK", "BL"]
+    if region_type == "LK":
+        return calculate_rvalues_from_cases(df, case_column=case_column, grouping_column="Landkreis_id")
+    else:
+        return calculate_rvalues_from_cases(df, case_column=case_column, grouping_column="Bundesland_id")
+
+
+def df_to_competition_format(df, value_column="incidence"):
+    assert value_column in ["incidence", "rvalue"]
+    # clean up dataframe: remove unnecessary columns, rename columns
+    if "Landkreis_id" in df.columns:
+        df = df.rename(columns={value_column: "value", "Landkreis_id": "location", "Meldedatum": "target"})
+    else:
+        df = df.rename(columns={value_column: "value", "Bundesland_id": "location", "Meldedatum": "target"})
+    return df.loc[:, ["location", "target", "value"]]
 
 
 def date_is_sunday(date_str: str) -> bool:
