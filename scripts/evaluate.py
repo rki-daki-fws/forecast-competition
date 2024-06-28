@@ -192,6 +192,7 @@ if __name__ == "__main__":
         res_entries = res.values.tolist()
         num_entries_before = len(res_entries)
         res_columns = res.columns.values.tolist()
+        del res
         
         for j, f in enumerate(to_evaluate):
             team, f_remaining = f.split(os.path.sep)[-2:]
@@ -203,7 +204,7 @@ if __name__ == "__main__":
             else:
                 # we like to get stable results, with delayed case reports being accounted for
                 # so the more recent the better
-                gt = utils.get_opendata(str(np.datetime64("today")))
+                gt = utils.get_opendata(str(np.datetime64("today")), location_type, pred_variable)
 
             pred = utils.load_data(f)  # format has already been validated, we can trust it here.
 
