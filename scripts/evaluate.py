@@ -174,7 +174,7 @@ if __name__ == "__main__":
     # naming already validated, can trust it here
 
     # scratch rows with values not older than n weeks from today (refdate) (there might be delay in reports)
-    res = utils.filter_last_weeks(res, 10)
+    res = utils.filter_last_weeks(res, 5)
 
     to_evaluate = []
     # check which submissions were not evaluated yet
@@ -194,7 +194,7 @@ if __name__ == "__main__":
         res_columns = res.columns.values.tolist()
         del res
         
-        for j, f in enumerate(to_evaluate):
+        for j, f in enumerate(to_evaluate[:100]):
             team, f_remaining = f.split(os.path.sep)[-2:]
             refdate, model, location_type, pred_variable = f_remaining.split(".")[0].split("_")
 
