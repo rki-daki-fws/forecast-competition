@@ -194,7 +194,7 @@ if __name__ == "__main__":
         res_columns = res.columns.values.tolist()
         del res
         
-        for j, f in enumerate(to_evaluate[:100]):
+        for j, f in enumerate(to_evaluate[:75]):
             team, f_remaining = f.split(os.path.sep)[-2:]
             refdate, model, location_type, pred_variable = f_remaining.split(".")[0].split("_")
 
