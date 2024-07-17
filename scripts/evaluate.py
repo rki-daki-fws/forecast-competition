@@ -182,8 +182,9 @@ if __name__ == "__main__":
         team, filename = submission.split(os.path.sep)[-2:]
         date, model, location, variable = filename.split("_")
         variable = variable.split(".")[0]
-        rows = (res["refdate"] == date) & (res["team"] == team) & (res["model"] == model)
-        # location_type, variable omitted for now
+        rows = (res["refdate"] == date) & (res["team"] == team) & (res["model"] == model) & \
+               (res["location_type"] == location) & (res["pred_variable"] == variable)
+
         if not len(res.loc[rows]):
             to_evaluate.append(submission)
     
