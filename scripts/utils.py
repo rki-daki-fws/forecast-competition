@@ -95,6 +95,10 @@ def load_results(results_dir="../results", submissions_dir="../submissions") -> 
     output = pd.concat(dfs)
     if isinstance(output.columns, pd.core.indexes.multi.MultiIndex):
         output.columns = output.columns.get_level_values(0)
+    # convert str columns to category for faster searching
+    for catcol in ["team", "model", "location_type", "pred_variable"]:
+        output[catcol] = output[catcol].astype('category')
+
     return output
 
 
