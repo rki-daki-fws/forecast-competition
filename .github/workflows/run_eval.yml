@@ -25,6 +25,9 @@ jobs:
           day=$(date +"%u")
           echo "DOWEEK=$((day))" >> $GITHUB_ENV
 
+      - name: Run autopurge needrestart
+        run: sudo apt-get autopurge -y needrestart
+
       - name: Skipping now
         if: env.DOWEEK == 7  # sunday
         run: echo "Thank you for your submission! It will be evaluated on the next scheduled run!"
