@@ -1,4 +1,4 @@
-name: Reduce disc space
+name: Inspect disc space
 
 on:
   workflow_dispatch:
