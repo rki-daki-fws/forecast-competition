@@ -1,0 +1,35 @@
+name: Free runner disc space
+
+on:
+  workflow_dispatch:
+    inputs:
+      manual-trigger:
+        description: 'Free runner disc space'
+        default: 'Run'
+
+jobs:
+  optimize-repo:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Maximize build space
+        shell: bash
+        run: |
+            df -h
+            sudo rm -rf /opt/android-sdk /opt/android-ndk /usr/lib/android-sdk /usr/lib/android-ndk
+            sudo apt-get remove --purge -y docker docker-engine docker.io containerd runc
+            sudo apt-get remove --purge -y clang clang-tools llvm llvm-dev llvm-runtime clangd lldb lld
+            sudo apt-get remove --purge -y dotnet-sdk-*
+            sudo apt-get remove --purge -y google-chrome-stable chromium-browser chromedriver
+            sudo apt-get remove --purge -y openjdk-*
+            sudo apt-get remove --purge -y rustc cargo
+            sudo apt-get remove --purge -y mono-runtime mono-devel msbuild
+            sudo apt-get remove --purge -y php php-cli php-common
+            sudo apt-get remove --purge -y firefox epiphany-browser midori
+            sudo apt-get remove --purge -y nodejs npm
+            sudo apt-get remove --purge -y apache2 nginx
+            sudo apt-get remove --purge -y postgresql postgresql-client mysql-server mysql-client
+            sudo apt-get remove --purge -y ghc haskell-platform
+            sudo apt-get remove --purge -y r-base r-base-core
+            sudo apt-get remove --purge -y swift swiftlang kotlin
+            sudo apt-get remove --purge -y azure-cli google-cloud-sdk awscli
+            df -h
