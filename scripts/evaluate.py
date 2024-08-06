@@ -229,8 +229,8 @@ def save_model_evaluation(results, new_evaluations):
     if new_evaluations.shape[0]:
         grouping_columns = ["team", "model", "location_type", "pred_variable"]
 
-        model_info = results.loc[0, grouping_columns].values.tolist()
         results = pd.concat([results, new_evaluations], ignore_index=True)
+        model_info = results.loc[0, grouping_columns].values.tolist()
         results = results.loc[:, [col for col in results.columns.to_list() if col not in grouping_columns]]
 
         utils.df_to_split_files(results, f"../results/res_{'_'.join(model_info)}.csv")
