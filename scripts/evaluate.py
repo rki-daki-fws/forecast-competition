@@ -247,7 +247,7 @@ def main():
 
     model_submissions = create_submissions_dict_per_model(submission_files)
 
-    for i, model, files in enumerate(model_submissions.items()):
+    for i, (model, files) in enumerate(model_submissions.items()):
         print(f"evaluating model {i}/{len(model_submissions)}: {model}")
         # check which submissions of this model were not evaluated yet
         results_model = load_model_results(model, res_dir, submissions_dir)
