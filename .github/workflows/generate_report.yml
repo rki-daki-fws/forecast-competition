@@ -13,6 +13,38 @@ jobs:
     runs-on: ubuntu-latest
     if: ${{ github.event.workflow_run.conclusion == 'success' }}
     steps:
+      - name: Maximize disc space
+        shell: bash
+        run: |
+          df -h
+          sudo rm -rf /opt/android-sdk /opt/android-ndk /usr/lib/android-sdk /usr/lib/android-ndk
+          sudo apt-get remove --purge -y docker docker-engine docker.io containerd runc
+          sudo apt-get remove --purge -y clang clang-tools llvm llvm-dev llvm-runtime clangd lldb lld
+          sudo apt-get remove --purge -y dotnet-sdk-*
+          sudo apt-get remove --purge -y google-chrome-stable chromium-browser chromedriver
+          sudo apt-get remove --purge -y openjdk-*
+          sudo apt-get remove --purge -y rustc cargo
+          sudo apt-get remove --purge -y mono-runtime mono-devel msbuild
+          sudo apt-get remove --purge -y php php-cli php-common
+          sudo apt-get remove --purge -y firefox epiphany-browser
+          sudo apt-get remove --purge -y nodejs npm
+          sudo apt-get remove --purge -y apache2 nginx
+          sudo apt-get remove --purge -y postgresql postgresql-client mysql-server mysql-client
+          sudo apt-get remove --purge -y ghc haskell-platform
+          sudo apt-get remove --purge -y r-base r-base-core
+          sudo apt-get remove --purge -y swift kotlin
+          sudo apt-get remove --purge -y azure-cli google-cloud-sdk awscli
+          sudo apt-get autoremove -y
+          sudo apt-get clean
+
+          df -h
+          sudo rm -rf /usr/share/dotnet
+          sudo rm -rf /usr/local/lib/android
+          sudo rm -rf /opt/ghc
+          sudo rm -rf /opt/hostedtoolcache/CodeQL
+          sudo docker image prune --all --force
+          sudo docker builder prune -a
+          df -h
       # Checks-out your repository, so your job can access it
       - uses: actions/checkout@v3
         with:
