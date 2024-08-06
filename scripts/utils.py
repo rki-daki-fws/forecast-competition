@@ -59,10 +59,11 @@ def load_results_file(filepath):
     return df
 
 
-def load_results(results_dir="../results", submissions_dir="../submissions") -> pd.DataFrame:
+def load_results(results_dir="../results", submissions_dir="../submissions",
+                 glob_str="*.csv") -> pd.DataFrame:
 
     # glob search results dir
-    files = sorted(glob.glob(f"{results_dir}/*.csv"))
+    files = sorted(glob.glob(f"{results_dir}/{glob_str}"))
 
     dfs = []
     for f in files:
@@ -92,7 +93,14 @@ def load_results(results_dir="../results", submissions_dir="../submissions") -> 
 
         dfs.append(subset_df)
 
-    output = pd.concat(dfs)
+    if len(dfs):
+        output = pd.concat(dfs, ignore_index=True)
+    else:
+        output = pd.DataFrame([],
+                              columns=["refdate", "team", "model", "location_type", "pred_variable"] +
+                                      pd.read_csv(results_dir + "/res_RKIsurv2_arima_LK_cases_1.csv").columns.to_list()[1:]
+                              )
+
     if isinstance(output.columns, pd.core.indexes.multi.MultiIndex):
         output.columns = output.columns.get_level_values(0)
     # convert str columns to category for faster searching
@@ -438,18 +446,6 @@ def get_cutoffs(asize, msize):
     return [(t * msize) / asize for t in range(times)]
 
 
-def cutoff_to_slices(df, cutoffs):
-    n = len(cutoffs)
-    cutoffs.append(1)  # guarantees that the last row index is always accounted for
-    slices = []
-    for i in range(n):
-        slice_start, slice_end = int(df.shape[0] * cutoffs[i]), int(df.shape[0] * cutoffs[i+1])
-        # print(slice_start, slice_end)
-        slices.append(df.iloc[slice_start:slice_end, :])
-
-    return slices
-
-
 def df_to_split_files(df, save_path, max_size_mb=45):
 
     path, basename, ending = separate_path(save_path)
@@ -463,10 +459,10 @@ def df_to_split_files(df, save_path, max_size_mb=45):
         return
 
     cutoffs = get_cutoffs(full_size, max_size_mb)
-    slices = cutoff_to_slices(df, cutoffs)
-
-    for i, s in enumerate(slices):
-        s.to_csv(f"{path}/{basename}_{i+1}{ending}", index=False, float_format='%.2f')
+    cutoffs.append(1)  # guarantees that the last row index is always accounted for
+    for i in range(len(cutoffs) - 1):
+        slice_start, slice_end = int(df.shape[0] * cutoffs[i]), int(df.shape[0] * cutoffs[i + 1])
+        df.iloc[slice_start:slice_end, :].to_csv(f"{path}/{basename}_{i+1}{ending}", index=False, float_format='%.2f')
 
 
 def separate_path(fpath: str) -> Tuple[str, str, str]:

@@ -159,88 +159,109 @@ def aggregate_scoreboard(lb):
     return agg
 
 
-if __name__ == "__main__":
-    import time
-    #repo = init_repo_obj('rki-daki-fws/forecast-competition')
+def create_submissions_dict_per_model(submission_files):
+    # create dictionary of model_pred_var: [fps]
+    # 'model name' needs to include prediction variable and location here, as there might be multiple combinations
+    model_submissions = {}
+    for submission_fp in submission_files:
+        team, filename = submission_fp.split(os.path.sep)[-2:]
+        model_name = filename[11:-8]  # 'model_location_variable'
+        model_submissions[model_name] = model_submissions.get(model_name, []) + [submission_fp]
+    return model_submissions
 
-    # load results
-    res_dir = "../results"
-    submissions_dir = "../submissions"
 
-    res = utils.load_results(res_dir, submissions_dir)  # it is a DF now
-    before = time.time()
-    # get all submission filenames
-    submission_files = glob.glob(f"{submissions_dir}{os.path.sep}*{os.path.sep}*.parquet")
-    # naming already validated, can trust it here
-
+def load_model_results(model, res_dir, submissions_dir):
+    res = utils.load_results(res_dir, submissions_dir, f"res_{model}*.csv")
     # scratch rows with values not older than n weeks from today (refdate) (there might be delay in reports)
     res = utils.filter_last_weeks(res, 5)
+    return res
 
+
+def check_model_submissions(results, submission_files):
     to_evaluate = []
-    # check which submissions were not evaluated yet
     for submission in submission_files:
         team, filename = submission.split(os.path.sep)[-2:]
         date, model, location, variable = filename.split("_")
         variable = variable.split(".")[0]
-        rows = (res["refdate"] == date) & (res["team"] == team) & (res["model"] == model) & \
-               (res["location_type"] == location) & (res["pred_variable"] == variable)
+        rows = (results["refdate"] == date) & (results["team"] == team) & (results["model"] == model) & \
+               (results["location_type"] == location) & (results["pred_variable"] == variable)
 
-        if not len(res.loc[rows]):
+        if not len(results.loc[rows]):
             to_evaluate.append(submission)
-    
-    if len(to_evaluate):
-        # run evaluation
-        res_entries = res.values.tolist()
-        num_entries_before = len(res_entries)
-        res_columns = res.columns.values.tolist()
-        del res
-        
-        for j, f in enumerate(to_evaluate[:75]):
-            team, f_remaining = f.split(os.path.sep)[-2:]
-            refdate, model, location_type, pred_variable = f_remaining.split(".")[0].split("_")
+    return to_evaluate
 
-            if utils.smaller_date(refdate, "2022-08-14"):
-                gt = pd.read_csv(os.path.join("../challenge-data",
-                                              "evaluation", f'2022-10-02_{location_type}_{pred_variable}.csv'))
-            else:
-                # we like to get stable results, with delayed case reports being accounted for
-                # so the more recent the better
-                gt = utils.get_opendata(str(np.datetime64("today")), location_type, pred_variable)
 
-            pred = utils.load_data(f)  # format has already been validated, we can trust it here.
+def evaluate_model_submission(to_evaluate, results_df_columns):
+    # run evaluation
+    new_entries = pd.DataFrame([])
 
-            submiss = Submission(f, team, model, refdate, location_type, pred_variable, pred)
-            # TODO rework evaluate()
-            #  one function for each metric? each returning a pd.Series
-            #  depends... if we want to add new metric, yes. otherwise as well?
-            # TODO evaluate needs to return targets and locations too, either in df or as lists
-            indices, scores = evaluate(gt, submiss)
-            # rather than one score, evaluate should return rows (one per day)
-            if indices is None:
-                warn(f"Dates or locations of prediction file {f} don't match ground truth!")
-                continue
+    for j, f in enumerate(to_evaluate):
+        team, f_remaining = f.split(os.path.sep)[-2:]
+        refdate, model, location_type, pred_variable = f_remaining.split(".")[0].split("_")
 
-            # prepare df like list, append to existing entries
-            dfbase = [[it] * len(indices[0]) for it in [refdate, team, model, location_type, pred_variable]]
-            new_entries = list(zip(*dfbase + indices + scores))  # df like
-            res_entries += new_entries
-
-        if len(res_entries) > num_entries_before:
-            # groupby model, team, model, location_type, variable
-            grouping_columns = ["team", "model", "location_type", "pred_variable"]
-            grouped = pd.DataFrame(res_entries, columns=res_columns).groupby(grouping_columns)
-            for model_info, model_results in grouped:
-                tmp_df = model_results.loc[:,
-                         [col for col in model_results.columns.to_list() if col not in grouping_columns]]
-
-                utils.df_to_split_files(tmp_df, f"../results/res_{'_'.join(model_info)}.csv")
-
-            # now done in workflow
-            # update files using github API
-            #update_repo_file(repo, resfile, "submit", "rb")
+        if utils.smaller_date(refdate, "2022-08-14"):
+            gt = pd.read_csv(os.path.join("../challenge-data",
+                                          "evaluation", f'2022-10-02_{location_type}_{pred_variable}.csv'))
         else:
-            sys.exit("No submissions file could be evaluated. Failing pipeline")
-    else:
-        print("No new submissions to evaluate!")
+            # we like to get stable results, with delayed case reports being accounted for
+            # so the more recent the better
+            gt = utils.get_opendata(str(np.datetime64("today")), location_type, pred_variable)
+
+        pred = utils.load_data(f)  # format has already been validated, we can trust it here.
+
+        submiss = Submission(f, team, model, refdate, location_type, pred_variable, pred)
+
+        indices, scores = evaluate(gt, submiss)
+        # rather than one score, evaluate should return rows (one per day)
+        if indices is None:
+            warn(f"Dates or locations of prediction file {f} don't match ground truth!")
+            continue
+
+        # prepare df like list, append to existing entries
+        dfbase = [[it] * len(indices[0]) for it in [refdate, team, model, location_type, pred_variable]]
+        new_entries = pd.concat([new_entries,
+                                 pd.DataFrame(list(zip(*dfbase + indices + scores)), columns=results_df_columns)
+                                 ])
+    return new_entries
+
+
+def save_model_evaluation(results, new_evaluations):
+    if new_evaluations.shape[0]:
+        grouping_columns = ["team", "model", "location_type", "pred_variable"]
+
+        model_info = results.loc[0, grouping_columns].values.tolist()
+        results = pd.concat([results, new_evaluations], ignore_index=True)
+        results = results.loc[:, [col for col in results.columns.to_list() if col not in grouping_columns]]
+
+        utils.df_to_split_files(results, f"../results/res_{'_'.join(model_info)}.csv")
+
+
+def main():
+    # load results
+    res_dir = "../results"
+    submissions_dir = "../submissions"
+
+    # get all submission filenames
+    submission_files = glob.glob(f"{submissions_dir}{os.path.sep}*{os.path.sep}*.parquet")
+    # naming already validated, can trust it here
+
+    model_submissions = create_submissions_dict_per_model(submission_files)
+
+    for i, model, files in enumerate(model_submissions.items()):
+        print(f"evaluating model {i}/{len(model_submissions)}: {model}")
+        # check which submissions of this model were not evaluated yet
+        results_model = load_model_results(model, res_dir, submissions_dir)
+        to_eval_model = check_model_submissions(results_model, files)
+
+        if len(to_eval_model):
+            new_evaluations_model = evaluate_model_submission(to_eval_model, results_model.columns.values.tolist())
+            save_model_evaluation(results_model, new_evaluations_model)
+
+
+if __name__ == "__main__":
+    import time
+
+    before = time.time()
+    main()
     after = time.time()
     print(f"this took {after - before} s")
